@@ -1,0 +1,311 @@
+{% extends "home.html" %}
+{% load static %}
+{% block title %}User Registration - Local Worker Finder{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'CSS/user_reg.css' %}">
+{% endblock %}
+
+{%block content%}
+
+    <br><br>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert 
+        {% if message.tags == 'success' %}alert-success
+        {% elif message.tags == 'warning' %}alert-warning
+        {% elif message.tags == 'error' %}alert-danger
+        {% endif %}
+        alert-dismissible fade show" role="alert">
+        
+        {{ message }}
+        
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+   
+<!-- -----------login model---------------------------- -->
+ <form action="/login" method="POST">
+      {% csrf_token %}
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  {% if messages %}
+    {% for message in messages %}
+        <script>
+            alert("{{ message }}");
+        </script>
+    {% endfor %}
+{% endif %}
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel" style="color:#752f2f;">Login</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Username" id="recipient-name" name="first_name">
+          </div>
+          <div class="mb-3">
+
+                <div class="input-group">
+                    <input type="password" class="form-control" id="passwordField" name="password" placeholder="Password">
+                    <span class="input-group-text" onclick="togglePassword()" style="cursor:pointer;">
+                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                    </span>
+                </div>
+                
+          </div>
+          
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-outline-secondary" data-bs-dismiss="modal">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h4 class="text-center mb-4">User Registration</h4>
+
+        <form action="/user_register" method="POST" onsubmit="return validateUserForm()">
+    {% csrf_token %}
+    <!-- PERSONAL DETAILS -->
+    <h5>Personal Details</h5>
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+            <input type="text" id="first_name" class="form-control" placeholder="First Name *" name="first_name">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="text" id="last_name" class="form-control" placeholder="Last Name *" name="last_name">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="email" id="email" class="form-control" placeholder="Email *" name="email">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="tel" id="phone" class="form-control" placeholder="Phone Number *" name="phone">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+            <input type="password" id="passwordField" class="form-control" placeholder="Password *" name="password">
+
+            <span class="input-group-text" onclick="togglePassword()" style="cursor:pointer;">
+                <i class="fa-solid fa-eye" id="eyeIcon"></i>
+            </span>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="password" id="confirm_password" class="form-control" placeholder="Confirm Password *">
+        </div>
+
+    <!-- ADDRESS DETAILS -->
+    <h5 class="mt-3">Address Details</h5>
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+            <select id="state" class="form-select" name="state">
+                <option value="">Select State *</option>
+                <option>Tamil Nadu</option>
+                <option>Others</option>
+            </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <select id="district" class="form-select" name="district">
+                <option value="">Select District *</option>
+                <option>Erode</option>
+                <option>Tiruppur</option>
+                <option>Coimbatore</option>
+                <option>Karur</option>
+                <option>Others</option>
+            </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <select id="city" class="form-select" name="city">
+                <option value="">Select City *</option>
+                <!-- Erode District -->
+                <option value="Erode">Erode</option>
+                <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
+                <option value="Perundurai">Perundurai</option>
+                <option value="Sathyamangalam">Sathyamangalam</option>
+                <option value="Bhavani">Bhavani</option>
+                <option value="Anthiyur">Anthiyur</option>
+                <!-- Tiruppur District -->
+                <option value="Tiruppur">Tiruppur</option>
+                <option value="Dharapuram">Dharapuram</option>
+                <option value="Udumalaipettai">Udumalaipettai</option>
+                <option value="Avinashi">Avinashi</option>
+                <option value="Palladam">Palladam</option>
+                <option value="Kangeyam">Kangeyam</option>
+                <!-- Coimbatore District -->
+                <option value="Coimbatore">Coimbatore</option>
+                <option value="Pollachi">Pollachi</option>
+                <option value="Mettupalayam">Mettupalayam</option>
+                <option value="Valparai">Valparai</option>
+                <option value="Sulur">Sulur</option>
+                <option value="Kinathukadavu">Kinathukadavu</option>
+                <!-- Karur District -->
+                <option value="Karur">Karur</option>
+                <option value="Kulithalai">Kulithalai</option>
+                <option value="Aravakurichi">Aravakurichi</option>
+                <option value="Krishnarayapuram">Krishnarayapuram</option>
+                <option value="Pugalur">Pugalur</option>
+                <option>Others</option>
+            </select>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="text" id="full_address" class="form-control" placeholder="Full Address *" name="full_address">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="text" id="landmark" class="form-control" placeholder="Landmark " name="landmark">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <input type="text" id="pincode" class="form-control" placeholder="Pincode *" name="pincode">
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-secondary w-100">Register</button>
+
+    </form>
+    </div>
+</div><br><br>
+
+</body>
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById("passwordField");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            eyeIcon.classList.remove("fa-eye-slash");
+            eyeIcon.classList.add("fa-eye");
+        }
+    }
+
+function validateUserForm() {
+
+
+    let firstName = document.getElementById("first_name").value.trim();
+    let lastName = document.getElementById("last_name").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let phone = document.getElementById("phone").value.trim();
+    let password = document.getElementById("passwordField").value;
+    let confirmPassword = document.getElementById("confirm_password").value;
+
+    let state = document.getElementById("state").value;
+    let district = document.getElementById("district").value;
+    let city = document.getElementById("city").value;
+    let fullAddress = document.getElementById("full_address").value.trim();
+    let landmark = document.getElementById("landmark").value.trim();
+    let pincode = document.getElementById("pincode").value.trim();
+
+
+    // PERSONAL DETAILS
+
+    if (firstName === "") {
+        alert("Enter Your First Name");
+        return false;
+    }
+
+    if (lastName === "") {
+        alert("Enter Your Last Name");
+        return false;
+    }
+
+    let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+    if (!emailPattern.test(email)) {
+        alert("Enter valid Email (must contain @)");
+        return false;
+    }
+
+    let phonePattern = /^[0-9]{10}$/;
+    if (!phonePattern.test(phone)) {
+        alert("Phone number must be exactly 10 digits and numbers only");
+        return false;
+    }
+
+    let passwordPattern = /^(?=.*[0-9])(?=.*[!@#$%^&*]).{6,8}$/;
+
+    if (!passwordPattern.test(password)) {
+        alert("Password must be 6-8 characters, include 1 number and 1 special character");
+        return false;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Password and Confirm Password must match");
+        return false;
+    }
+
+
+    // ADDRESS DETAILS
+
+    if (!state) {
+        alert("Select Your State");
+        return false;
+    }
+
+    if (!district) {
+        alert("Select Your District");
+        return false;
+    }
+
+    if (!city) {
+        alert("Select Your City");
+        return false;
+    }
+
+    if (fullAddress === "") {
+        alert("Enter Your Full Address");
+        return false;
+    }
+
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+        alert("Pincode must be 6 digits");
+        return false;
+    }
+
+    return true;
+}
+
+function togglePassword() {
+    var password = document.getElementById("passwordField");
+    var icon = document.getElementById("eyeIcon");
+
+    if (password.type === "password") {
+        password.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        password.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+}
+
+
+</script>
+</html>
+
+{% endblock %}

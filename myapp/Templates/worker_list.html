@@ -1,0 +1,259 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}{{ category }} - {{ worker_type }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/category_page.css' %}">
+<style>
+    .worker-list-container {
+        margin-top: 100px;
+        margin-bottom: 50px;
+    }
+
+    .worker-card {
+        background: white !important; 
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid #8f4444;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        text-align: left !important; 
+        position: relative;
+        overflow: hidden;
+    }
+
+    .worker-card::before, .worker-card::after {
+        display: none !important;
+    }
+
+    .worker-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(143, 68, 68, 0.2);
+        background: white !important; 
+    }
+
+    .worker-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .worker-info {
+        color: #666;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        text-align: left;
+    }
+
+    .worker-info strong {
+        color: #8f4444;
+    }
+
+    .btn-see-more {
+        background-color: #8f4444;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+        display: inline-block; /* Ensure it stays left */
+    }
+
+    .btn-see-more:hover {
+        background-color: #6f3535;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .page-title {
+        color: #333;
+        margin-bottom: 30px;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    h2 a img {
+        transition: transform 0.3s ease;
+        vertical-align: middle;
+    }
+    h2 a img:hover {
+        transform: rotate(180deg);
+    }
+
+    .btn-secondary {
+        background-color: #8f4444 !important;
+        color: white !important;
+        border: none !important;
+        padding: 8px 20px !important;
+        font-weight: 600 !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-secondary:hover {
+        background-color: #6f3535 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(143, 68, 68, 0.3) !important;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f5f5 0%, rgb(208, 208, 208) 100%) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- login modal -->
+<form action="/login" method="POST">
+    {% csrf_token %}
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, rgb(208, 208, 208) 0%, rgba(208, 208, 208, 0.8) 100%); border-bottom: 3px solid #8f4444;">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel" style="color:#752f2f;">Login</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Username" name="first_name">
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="passwordFieldList" name="password" placeholder="Password">
+                            <span class="input-group-text" onclick="togglePasswordList()" style="cursor:pointer;">
+                                <i class="fa-solid fa-eye" id="eyeIconList"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-secondary">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="container worker-list-container">
+    <h2 class="page-title text-start">
+        <a href="/category/{{ category }}/"><img src="{%static 'images/left-arrow.png'%}" alt="" width="20px" height="20px"></a>
+        <i class="fa-solid fa-briefcase"></i> {{ category }} - {{ worker_type }}
+    </h2>
+
+    {% if workers %}
+    <div class="row text-start">
+        {% for worker in workers %}
+        <div class="col-lg-6 mb-4">
+            <div class="worker-card text-start">
+                <div class="worker-name">
+                    {{ worker.first_name }} {{ worker.last_name }}
+                </div>
+                <div class="worker-info">
+                    <strong><i class="fa-solid fa-briefcase"></i> Type:</strong> {{ worker.worker_type }}
+                </div>
+                <div class="worker-info">
+                    <strong><i class="fa-solid fa-map-location-dot"></i> Service Area:</strong> {{ worker.service_area }}
+                </div>
+                <div class="worker-info">
+                    <strong><i class="fa-solid fa-star"></i> Experience:</strong> {{ worker.experience }} years
+                </div>
+                <button class="btn btn-see-more" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id }}">
+                    <i class="fa-solid fa-eye"></i> See More
+                </button>
+            </div>
+        </div>
+
+        <!-- Worker Details Modal -->
+        <div class="modal fade" id="workerModal{{ worker.id }}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content text-start">
+                    <div class="modal-header" style="background: linear-gradient(135deg, rgb(208, 208, 208) 0%, rgba(208, 208, 208, 0.8) 100%); border-bottom: 3px solid #8f4444;">
+                        <h5 class="modal-title" style="color: #8f4444; font-weight: 700;">
+                        {{ worker.first_name }} {{ worker.last_name }} - Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 5px;">Personal Details</h6>
+                                <p><strong>Name:</strong> {{ worker.first_name }} {{ worker.last_name }}</p>
+                                <p><strong>Email:</strong> {{ worker.email }}</p>
+                                <p><strong>Phone:</strong> {{ worker.phone }}</p>
+                                <p><strong>Gender:</strong> {{ worker.gender }}</p>
+                            </div>
+                            <div>
+                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 5px;">Work Details</h6>
+                                <p><strong>Category:</strong> {{ worker.category }}</p>
+                                <p><strong>Worker Type:</strong> {{ worker.worker_type }}</p>
+                                <p><strong>Experience:</strong> {{ worker.experience }} years</p>
+                                <p><strong>Service Area:</strong> {{ worker.service_area }}</p>
+                            </div>
+                            <div>
+                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 5px;">Address</h6>
+                                <p><strong>State:</strong> {{ worker.state }}</p>
+                                <p><strong>District:</strong> {{ worker.district }}</p>
+                                <p><strong>City:</strong> {{ worker.city }}</p>
+                                <p><strong>Pincode:</strong> {{ worker.pincode }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top: 3px solid rgb(208, 208, 208); background-color: #f9f9f9; display: block;">
+                        {% if request.session.user_type == 'user' %}
+                        <form method="POST" action="{% url 'create_booking' %}" style="width: 100%;">
+                            {% csrf_token %}
+                            <input type="hidden" name="worker_id" value="{{ worker.id }}">
+                            <input type="hidden" name="service_type" value="{{ worker_type }}">
+                            <div class="mb-3 text-start">
+                                <label for="description{{ worker.id }}" class="form-label" style="font-weight: 600; color: #333;">Describe the work or complaint</label>
+                                <textarea class="form-control" id="description{{ worker.id }}" name="description" rows="3" required placeholder="Type the work details..."></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary" style="background-color: #8f4444; border: none; color: white; padding: 10px 25px; font-weight: 600;">
+                                    <i class="fa-solid fa-check"></i> Assign
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                        <div style="width: 100%; text-align: center; padding: 10px;">
+                            <p style="color: #666; margin: 0;"><a href="?next=login" style="color: #8f4444;">Login as user</a> to assign this worker</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" style="background-color: #d1ecf1; border-left: 4px solid #0c5460; color: #0c5460;">
+        <i class="fa-solid fa-info-circle"></i> No workers found for {{ category }} - {{ worker_type }}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function togglePasswordList() {
+        var password = document.getElementById("passwordFieldList");
+        var icon = document.getElementById("eyeIconList");
+        if (password.type === "password") {
+            password.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            password.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
