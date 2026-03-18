@@ -109,36 +109,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- login modal -->
-<form action="/login" method="POST">
-    {% csrf_token %}
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background: linear-gradient(135deg, rgb(208, 208, 208) 0%, rgba(208, 208, 208, 0.8) 100%); border-bottom: 3px solid #8f4444;">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel" style="color:#752f2f;">Login</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Username" name="first_name">
-                    </div>
-                    <div class="mb-3">
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="passwordFieldList" name="password" placeholder="Password">
-                            <span class="input-group-text" onclick="togglePasswordList()" style="cursor:pointer;">
-                                <i class="fa-solid fa-eye" id="eyeIconList"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-outline-secondary">Login</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
 
 <div class="container worker-list-container">
     <h2 class="page-title text-start">
@@ -255,5 +225,4 @@
         }
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

@@ -10,366 +10,333 @@
 
 <br><br><br>
 {% if messages %}
-{% for message in messages %}
-<div class="alert 
-        {% if message.tags == 'success' %}alert-success
-        {% elif message.tags == 'warning' %}alert-warning
-        {% elif message.tags == 'error' %}alert-danger
-        {% endif %}
-        alert-dismissible fade show" role="alert">
-
-    {{ message }}
-
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-{% endfor %}
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+      <!-- Registration Success Modal -->
+      <div class="modal fade" id="regSuccessModal" tabindex="-1" aria-labelledby="regSuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content shadow-lg border-0" style="border-radius: 20px;">
+            <div class="modal-body text-center p-5">
+              <div class="mb-4">
+                <i class="fa-solid fa-circle-check" style="font-size: 80px; color: #8f4444;"></i>
+              </div>
+              <h2 class="modal-title fw-bold mb-3" id="regSuccessModalLabel" style="color: #8f4444;">Congratulations!</h2>
+              <p class="fs-5 text-dark mb-4">{{ message }}</p>
+              <div class="hr-theme mb-4" style="height: 3px; background: linear-gradient(90deg, transparent, #8f4444, transparent);"></div>
+              <p class="text-muted small">Welcome to Local Worker Finder! You can now log in to the portal and start Providing Services.</p>
+              <button type="button" class="btn btn-lg w-100 rounded-pill shadow-sm mt-3 text-white" 
+                      data-bs-dismiss="modal" 
+                      style="background-color: #8f4444; border: none;">
+                <i class="fa-solid fa-rocket me-2"></i> Get Started
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          var myModal = new bootstrap.Modal(document.getElementById('regSuccessModal'));
+          myModal.show();
+        });
+      </script>
+    {% else %}
+      <div class="alert alert-{% if message.tags == 'warning' %}warning{% elif message.tags == 'error' %}danger{% else %}info{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endif %}
+  {% endfor %}
 {% endif %}
 
-
-<!-- -----------login model---------------------------- -->
- <form action="/login" method="POST">
-      {% csrf_token %}
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  {% if messages %}
-    {% for message in messages %}
-        <script>
-            alert("{{ message }}");
-        </script>
-    {% endfor %}
-{% endif %}
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel" style="color:#752f2f;">Login</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <input type="text" class="form-control" placeholder="Username" id="recipient-name" name="first_name">
-          </div>
-          <div class="mb-3">
-
-                <div class="input-group">
-                    <input type="password" class="form-control" id="passwordField" name="password" placeholder="Password">
-                    <span class="input-group-text" onclick="togglePassword()" style="cursor:pointer;">
-                        <i class="fa-solid fa-eye" id="eyeIcon"></i>
-                    </span>
-                </div>
-                
-          </div>
-          
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-outline-secondary" data-bs-dismiss="modal">Login</button>
-      </div>
-    </div>
-  </div>
-</div>
-</form>
 
 
 <form action="/worker_register" method="POST" onsubmit="return validateForm()">
-{% csrf_token %}
-<div class="container mt-5">
-    <div class="card p-4 shadow">
+    {% csrf_token %}
+    <div class="container mt-5">
+        <div class="card p-4 shadow">
 
-    <h4 class="mb-3 text-center">Worker Registration</h4>
+            <h4 class="mb-3 text-center">Worker Registration</h4>
 
-    <!-- Personal Details --------------------------------------------------------------------------->
-    <h5>Personal Details</h5>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <input type="text" class="form-control" id="first_name" placeholder="First Name *"
-                name="first_name">
-        </div>
-        <div class="col-md-6 mb-3">
-            <input type="text" class="form-control" id="last_name" placeholder="Last Name *" name="last_name">
-        </div>
-        <div class="col-md-6 mb-3">
-            <input type="tel" class="form-control" id="phone" placeholder="Phone Number *" name="phone">
-        </div>
-        <div class="col-md-6 mb-3">
-            <input type="email" class="form-control" id="email" placeholder="Email Address *" name="email">
-        </div>
-        <div class="col-md-6 mb-3">
-            <div class="input-group">
-                <input type="password" id="passwordField" class="form-control" placeholder="Password *"
-                    name="password">
+            <!-- Personal Details --------------------------------------------------------------------------->
+            <h5>Personal Details</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <input type="text" class="form-control" id="first_name" placeholder="First Name *"
+                        name="first_name">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="text" class="form-control" id="last_name" placeholder="Last Name *" name="last_name">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="tel" class="form-control" id="phone" placeholder="Phone Number *" name="phone">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="email" class="form-control" id="email" placeholder="Email Address *" name="email">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="input-group">
+                        <input type="password" id="regPasswordField" class="form-control" placeholder="Password *"
+                            name="password">
 
-                <span class="input-group-text" onclick="togglePassword()" style="cursor:pointer;">
-                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
-                </span>
+                        <span class="input-group-text" onclick="togglePassword('regPasswordField', 'regEyeIcon')"
+                            style="cursor:pointer;">
+                            <i class="fa-solid fa-eye" id="regEyeIcon"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <input type="password" class="form-control" id="confirm_password" placeholder="Confirm Password">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="date" id="dob" class="form-control" name="dob">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <select id="gender" class="form-select" name="gender">
+                        <option value=""> Gender *</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
             </div>
+
+            <!-- Work Details --------------------------------------------------------------------------------->
+            <h5 class="mt-3">Work Details</h5>
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <select class="form-select" id="worker_type" onchange="setCategory()" name="worker_type">
+                        <option value="" selected>Select Worker type *</option>
+
+                        <!-- Home Repair & Maintenance Workers -->
+                        <option value="Plumber">Plumber</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Mechanic_2_4_wheeler">Mechanic (2-wheeler / 4-wheeler)</option>
+                        <option value="AC_Technician">AC Technician</option>
+                        <option value="Refrigerator_Technician">Refrigerator Technician</option>
+                        <option value="Washing_Machine_Repair">Washing Machine Repair</option>
+                        <option value="TV_Electronics_Repair">TV / Electronics Repair</option>
+                        <option value="Inverter_Technician">Inverter Technician</option>
+                        <option value="RO_Water_Purifier_Technician">RO Water Purifier Technician</option>
+                        <option value="Gas Stove Technician">Gas Stove Technician</option>
+                        <option value="Chimney / Hob Technician">Chimney / Hob Technician</option>
+                        <option value="Water Motor Technician">Water Motor Technician</option>
+                        <option value="UPS / Battery Technician"> UPS / Battery Technician</option>
+
+                        <!-- Construction & Building Workers -->
+                        <option value="Mason">Mason</option>
+                        <option value="Carpenter">Carpenter</option>
+                        <option value="Painter">Painter</option>
+                        <option value="Tile_Worker">Tile Worker</option>
+                        <option value="Marble_Granite_Worker">Marble / Granite Worker</option>
+                        <option value="Plaster_Worker">Plaster Worker</option>
+                        <option value="Welder">Welder</option>
+                        <option value="Fabricator">Fabricator</option>
+                        <option value="Steel_Fixer">Steel Fixer</option>
+                        <option value="Concrete Mixer Operator">Concrete Mixer Operator</option>
+                        <option value="Demolition Worker">Demolition Worker</option>
+                        <option value="False Ceiling Worker">False Ceiling Worker</option>
+
+                        <!-- Cleaning & Domestic Workers -->
+                        <option value="House_Cleaner">House Cleaner</option>
+                        <option value="Office_Cleaner">Office Cleaner</option>
+                        <option value="Sweeper">Sweeper</option>
+                        <option value="Garbage_Collector">Garbage Collector</option>
+                        <option value="Septic_Tank_Cleaner">Septic Tank Cleaner</option>
+                        <option value="Drainage_Cleaner">Drainage Cleaner</option>
+                        <option value="Bathroom Deep Cleaner"> Bathroom Deep Cleaner</option>
+
+                        <!-- Outdoor & Utility Workers -->
+                        <option value="Gardener">Gardener</option>
+                        <option value="Borewell_Worker">Borewell Worker</option>
+                        <option value="Water_Tank_Cleaner">Water Tank Cleaner</option>
+                        <option value="Pest_Control_Worker">Pest Control Worker</option>
+                        <option value="Tree_Cutter">Tree Cutter</option>
+                        <option value="Drainage Maintenance Worker"> Drainage Maintenance Worker</option>
+                        <option value="Roadside Cleaner">Roadside Cleaner</option>
+                        <option value="Rainwater Harvesting Worker"> Rainwater Harvesting Worker</option>
+
+                        <!-- Installation & Fitting Workers -->
+                        <option value="CCTV_Installer">CCTV Installer</option>
+                        <option value="Solar_Panel_Installer">Solar Panel Installer</option>
+                        <option value="Network_Cable_Technician">Network Cable Technician</option>
+                        <option value="Door_Window_Fitter">Door / Window Fitter</option>
+                        <option value="Modular_Kitchen_Installer">Modular Kitchen Installer</option>
+                        <option value="Wallpaper_Installer">Wallpaper Installer</option>
+                        <option value="LED_Light_Installer">LED Light Installer</option>
+                        <option value="Smart_Lock_Installer">Smart Lock Installer</option>
+                        <option value="Water_Heater_Installer">Water Heater Installer</option>
+
+                        <!-- Transport & Labor Workers -->
+                        <option value="Driver">Driver</option>
+                        <option value="Loader_Unloader">Loader / Unloader</option>
+                        <option value="Daily_Wage_Laborer">Daily Wage Laborer</option>
+                        <option value="Packers_Movers_Helper">Packers & Movers Helper</option>
+
+                        <!-- Tailoring & Small Skill Workers -->
+                        <option value="Tailor">Tailor</option>
+                        <option value="Embroidery Worker">Embroidery Worker</option>
+                        <option value="Cobbler">Cobbler</option>
+                        <option value="Watch_Repair">Watch Repair</option>
+                        <option value="Mobile_Repair_Technician">Mobile Repair Technician</option>
+                        <option value="Lock_Repair_Key_Maker">Lock Repair (Key Maker)</option>
+
+                        <!-- Food & Event Support Workers -->
+                        <option value="Cook">Cook</option>
+                        <option value="Tea_Master">Tea Master</option>
+                        <option value="Juice_Maker">Juice Maker</option>
+                        <option value="Fast_Food_Helper">Fast Food Helper</option>
+                        <option value="Dish_Washer">Dish Washer</option>
+                        <option value="Catering_Helper">Catering Helper</option>
+                        <option value="Server_Waiter">Server / Waiter</option>
+                        <option value="Event_Setup_Worker">Event Setup Worker</option>
+                        <option value="Tent_House_Worker">Tent House Worker</option>
+
+                        <!-- Care & Personal Support -->
+                        <option value="Babysitter">Babysitter</option>
+                        <option value="Elder_Care_Worker">Elder Care Worker</option>
+                        <option value="Patient_Care_Assistant">Patient Care Assistant</option>
+                        <option value="Home_Nurse_Assistant">Home Nurse Assistant</option>
+                        <option value="Patient_Transport_Helper">Patient Transport Helper</option>
+
+                        <!-- Rural / Traditional Workers -->
+                        <option value="Milkman">Milkman</option>
+                        <option value="Fisherman">Fisherman</option>
+                        <option value="Farm_Laborer">Farm Laborer</option>
+                        <option value="Tractor_Driver">Tractor Driver</option>
+                        <option value="Poultry_Worker">Poultry Worker</option>
+                        <option value="Well_Cleaner">Well Cleaner</option>
+                        <option value="Irrigation_Helper">Irrigation Helper</option>
+                        <option value="Seed_Plantation_Worker">Seed Plantation Worker</option>
+                        <option value="Organic_Farming_Helper">Organic Farming Helper</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <select id="category" class="form-select" name="category">
+                        <option selected disabled>Select Category</option>
+
+                        <option value="Home Maintenance">Home Maintenance</option>
+                        <option value="Construction Services">Construction Services</option>
+                        <option value="Cleaning Services">Cleaning Services</option>
+                        <option value="Outdoor Services">Outdoor Services</option>
+                        <option value="Installation Services">Installation Services</option>
+                        <option value="Logistics & Labor">Logistics & Labor</option>
+                        <option value="Tailoring & Crafts">Tailoring & Crafts</option>
+                        <option value="Food & Event Support">Food & Event Support</option>
+                        <option value="Personal Care">Personal Care</option>
+                        <option value="Rural Services">Rural Services</option>
+
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <input type="number" class="form-control" id="Experience" placeholder="Years of Experience *"
+                        min="1" max="20" name="experience">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <select class="form-select" id="Area" name="service_area">
+                        <option value="" selected>Service Area *</option>
+                        <!-- Erode District -->
+                        <option value="Erode">Erode</option>
+                        <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
+                        <option value="Perundurai">Perundurai</option>
+                        <option value="Sathyamangalam">Sathyamangalam</option>
+                        <option value="Bhavani">Bhavani</option>
+                        <option value="Anthiyur">Anthiyur</option>
+                        <!-- Tiruppur District -->
+                        <option value="Tiruppur">Tiruppur</option>
+                        <option value="Dharapuram">Dharapuram</option>
+                        <option value="Udumalaipettai">Udumalaipettai</option>
+                        <option value="Avinashi">Avinashi</option>
+                        <option value="Palladam">Palladam</option>
+                        <option value="Kangeyam">Kangeyam</option>
+                        <!-- Coimbatore District -->
+                        <option value="Coimbatore">Coimbatore</option>
+                        <option value="Pollachi">Pollachi</option>
+                        <option value="Mettupalayam">Mettupalayam</option>
+                        <option value="Valparai">Valparai</option>
+                        <option value="Sulur">Sulur</option>
+                        <option value="Kinathukadavu">Kinathukadavu</option>
+                        <!-- Karur District -->
+                        <option value="Karur">Karur</option>
+                        <option value="Kulithalai">Kulithalai</option>
+                        <option value="Aravakurichi">Aravakurichi</option>
+                        <option value="Krishnarayapuram">Krishnarayapuram</option>
+                        <option value="Pugalur">Pugalur</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Address -------------------------------------------------------------------------------------------->
+            <h5 class="mt-3">Address</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <select id="state" class="form-select" name="state">
+                        <option value="" selected disabled>Select State *</option>
+                        <option>Tamil Nadu</option>
+                        <option>Others</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <select id="district" class="form-select" name="district">
+                        <option value="" selected disabled>Select District *</option>
+                        <option>Erode</option>
+                        <option>Tiruppur</option>
+                        <option>Coimbatore</option>
+                        <option>Karur</option>
+                        <option>Others</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <select id="city" class="form-select" name="city">
+                        <option value="" selected disabled>Select City *</option>
+                        <!-- Erode District -->
+                        <option value="Erode">Erode</option>
+                        <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
+                        <option value="Perundurai">Perundurai</option>
+                        <option value="Sathyamangalam">Sathyamangalam</option>
+                        <option value="Bhavani">Bhavani</option>
+                        <option value="Anthiyur">Anthiyur</option>
+                        <!-- Tiruppur District -->
+                        <option value="Tiruppur">Tiruppur</option>
+                        <option value="Dharapuram">Dharapuram</option>
+                        <option value="Udumalaipettai">Udumalaipettai</option>
+                        <option value="Avinashi">Avinashi</option>
+                        <option value="Palladam">Palladam</option>
+                        <option value="Kangeyam">Kangeyam</option>
+                        <!-- Coimbatore District -->
+                        <option value="Coimbatore">Coimbatore</option>
+                        <option value="Pollachi">Pollachi</option>
+                        <option value="Mettupalayam">Mettupalayam</option>
+                        <option value="Valparai">Valparai</option>
+                        <option value="Sulur">Sulur</option>
+                        <option value="Kinathukadavu">Kinathukadavu</option>
+                        <!-- Karur District -->
+                        <option value="Karur">Karur</option>
+                        <option value="Kulithalai">Kulithalai</option>
+                        <option value="Aravakurichi">Aravakurichi</option>
+                        <option value="Krishnarayapuram">Krishnarayapuram</option>
+                        <option value="Pugalur">Pugalur</option>
+                        <option value="Pugalur">Others</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <input type="text" id="Pincode" class="form-control" placeholder="Pincode *" name="pincode">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-secondary ">Register</button>
+
         </div>
-
-        <div class="col-md-6 mb-3">
-            <input type="password" class="form-control" id="confirm_password" placeholder="Confirm Password">
-        </div>
-        <div class="col-md-6 mb-3">
-            <input type="date" id="dob" class="form-control" name="dob">
-        </div>
-        <div class="col-md-6 mb-3">
-            <select id="gender" class="form-select" name="gender">
-                <option value=""> Gender *</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Work Details --------------------------------------------------------------------------------->
-    <h5 class="mt-3">Work Details</h5>
-    <div class="row">
-
-        <div class="col-md-6 mb-3">
-            <select class="form-select" id="worker_type" onchange="setCategory()" name="worker_type">
-                <option value="" selected>Select Worker type *</option>
-
-                <!-- Home Repair & Maintenance Workers -->
-                <option value="Plumber">Plumber</option>
-                <option value="Electrician">Electrician</option>
-                <option value="Mechanic_2_4_wheeler">Mechanic (2-wheeler / 4-wheeler)</option>
-                <option value="AC_Technician">AC Technician</option>
-                <option value="Refrigerator_Technician">Refrigerator Technician</option>
-                <option value="Washing_Machine_Repair">Washing Machine Repair</option>
-                <option value="TV_Electronics_Repair">TV / Electronics Repair</option>
-                <option value="Inverter_Technician">Inverter Technician</option>
-                <option value="RO_Water_Purifier_Technician">RO Water Purifier Technician</option>
-                <option value="Gas Stove Technician">Gas Stove Technician</option>
-                <option value="Chimney / Hob Technician">Chimney / Hob Technician</option>
-                <option value="Water Motor Technician">Water Motor Technician</option>
-                <option value="UPS / Battery Technician"> UPS / Battery Technician</option>
-
-                <!-- Construction & Building Workers -->
-                <option value="Mason">Mason</option>
-                <option value="Carpenter">Carpenter</option>
-                <option value="Painter">Painter</option>
-                <option value="Tile_Worker">Tile Worker</option>
-                <option value="Marble_Granite_Worker">Marble / Granite Worker</option>
-                <option value="Plaster_Worker">Plaster Worker</option>
-                <option value="Welder">Welder</option>
-                <option value="Fabricator">Fabricator</option>
-                <option value="Steel_Fixer">Steel Fixer</option>
-                <option value="Concrete Mixer Operator">Concrete Mixer Operator</option>
-                <option value="Demolition Worker">Demolition Worker</option>
-                <option value="False Ceiling Worker">False Ceiling Worker</option>
-
-                <!-- Cleaning & Domestic Workers -->
-                <option value="House_Cleaner">House Cleaner</option>
-                <option value="Office_Cleaner">Office Cleaner</option>
-                <option value="Sweeper">Sweeper</option>
-                <option value="Garbage_Collector">Garbage Collector</option>
-                <option value="Septic_Tank_Cleaner">Septic Tank Cleaner</option>
-                <option value="Drainage_Cleaner">Drainage Cleaner</option>
-                <option value="Bathroom Deep Cleaner"> Bathroom Deep Cleaner</option>
-
-                <!-- Outdoor & Utility Workers -->
-                <option value="Gardener">Gardener</option>
-                <option value="Borewell_Worker">Borewell Worker</option>
-                <option value="Water_Tank_Cleaner">Water Tank Cleaner</option>
-                <option value="Pest_Control_Worker">Pest Control Worker</option>
-                <option value="Tree_Cutter">Tree Cutter</option>
-                <option value="Drainage Maintenance Worker"> Drainage Maintenance Worker</option>
-                <option value="Roadside Cleaner">Roadside Cleaner</option>
-                <option value="Rainwater Harvesting Worker"> Rainwater Harvesting Worker</option>
-
-                <!-- Installation & Fitting Workers -->
-                <option value="CCTV_Installer">CCTV Installer</option>
-                <option value="Solar_Panel_Installer">Solar Panel Installer</option>
-                <option value="Network_Cable_Technician">Network Cable Technician</option>
-                <option value="Door_Window_Fitter">Door / Window Fitter</option>
-                <option value="Modular_Kitchen_Installer">Modular Kitchen Installer</option>
-                <option value="Wallpaper_Installer">Wallpaper Installer</option>
-                <option value="LED_Light_Installer">LED Light Installer</option>
-                <option value="Smart_Lock_Installer">Smart Lock Installer</option>
-                <option value="Water_Heater_Installer">Water Heater Installer</option>
-
-                <!-- Transport & Labor Workers -->
-                <option value="Driver">Driver</option>
-                <option value="Loader_Unloader">Loader / Unloader</option>
-                <option value="Daily_Wage_Laborer">Daily Wage Laborer</option>
-                <option value="Packers_Movers_Helper">Packers & Movers Helper</option>
-
-                <!-- Tailoring & Small Skill Workers -->
-                <option value="Tailor">Tailor</option>
-                <option value="Embroidery Worker">Embroidery Worker</option>
-                <option value="Cobbler">Cobbler</option>
-                <option value="Watch_Repair">Watch Repair</option>
-                <option value="Mobile_Repair_Technician">Mobile Repair Technician</option>
-                <option value="Lock_Repair_Key_Maker">Lock Repair (Key Maker)</option>
-
-                <!-- Food & Event Support Workers -->
-                <option value="Cook">Cook</option>
-                <option value="Tea_Master">Tea Master</option>
-                <option value="Juice_Maker">Juice Maker</option>
-                <option value="Fast_Food_Helper">Fast Food Helper</option>
-                <option value="Dish_Washer">Dish Washer</option>
-                <option value="Catering_Helper">Catering Helper</option>
-                <option value="Server_Waiter">Server / Waiter</option>
-                <option value="Event_Setup_Worker">Event Setup Worker</option>
-                <option value="Tent_House_Worker">Tent House Worker</option>
-
-                <!-- Care & Personal Support -->
-                <option value="Babysitter">Babysitter</option>
-                <option value="Elder_Care_Worker">Elder Care Worker</option>
-                <option value="Patient_Care_Assistant">Patient Care Assistant</option>
-                <option value="Home_Nurse_Assistant">Home Nurse Assistant</option>
-                <option value="Patient_Transport_Helper">Patient Transport Helper</option>
-
-                <!-- Rural / Traditional Workers -->
-                <option value="Milkman">Milkman</option>
-                <option value="Fisherman">Fisherman</option>
-                <option value="Farm_Laborer">Farm Laborer</option>
-                <option value="Tractor_Driver">Tractor Driver</option>
-                <option value="Poultry_Worker">Poultry Worker</option>
-                <option value="Well_Cleaner">Well Cleaner</option>
-                <option value="Irrigation_Helper">Irrigation Helper</option>
-                <option value="Seed_Plantation_Worker">Seed Plantation Worker</option>
-                <option value="Organic_Farming_Helper">Organic Farming Helper</option>
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <select id="category" class="form-select" name="category">
-                <option selected disabled>Select Category</option>
-
-                <option value="Home Maintenance">Home Maintenance</option>
-                <option value="Construction Services">Construction Services</option>
-                <option value="Cleaning Services">Cleaning Services</option>
-                <option value="Outdoor Services">Outdoor Services</option>
-                <option value="Installation Services">Installation Services</option>
-                <option value="Logistics & Labor">Logistics & Labor</option>
-                <option value="Tailoring & Crafts">Tailoring & Crafts</option>
-                <option value="Food & Event Support">Food & Event Support</option>
-                <option value="Personal Care">Personal Care</option>
-                <option value="Rural Services">Rural Services</option>
-
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <input type="number" class="form-control" id="Experience" placeholder="Years of Experience *"
-                min="1" max="20" name="experience">
-        </div>
-        <div class="col-md-6 mb-3">
-            <select class="form-select" id="Area" name="service_area">
-                <option value="" selected>Service Area *</option>
-                <!-- Erode District -->
-                <option value="Erode">Erode</option>
-                <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
-                <option value="Perundurai">Perundurai</option>
-                <option value="Sathyamangalam">Sathyamangalam</option>
-                <option value="Bhavani">Bhavani</option>
-                <option value="Anthiyur">Anthiyur</option>
-                <!-- Tiruppur District -->
-                <option value="Tiruppur">Tiruppur</option>
-                <option value="Dharapuram">Dharapuram</option>
-                <option value="Udumalaipettai">Udumalaipettai</option>
-                <option value="Avinashi">Avinashi</option>
-                <option value="Palladam">Palladam</option>
-                <option value="Kangeyam">Kangeyam</option>
-                <!-- Coimbatore District -->
-                <option value="Coimbatore">Coimbatore</option>
-                <option value="Pollachi">Pollachi</option>
-                <option value="Mettupalayam">Mettupalayam</option>
-                <option value="Valparai">Valparai</option>
-                <option value="Sulur">Sulur</option>
-                <option value="Kinathukadavu">Kinathukadavu</option>
-                <!-- Karur District -->
-                <option value="Karur">Karur</option>
-                <option value="Kulithalai">Kulithalai</option>
-                <option value="Aravakurichi">Aravakurichi</option>
-                <option value="Krishnarayapuram">Krishnarayapuram</option>
-                <option value="Pugalur">Pugalur</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Address -------------------------------------------------------------------------------------------->
-    <h5 class="mt-3">Address</h5>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <select id="state" class="form-select" name="state">
-                <option value="" selected disabled>Select State *</option>
-                <option>Tamil Nadu</option>
-                <option>Others</option>
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <select id="district" class="form-select" name="district">
-                <option value="" selected disabled>Select District *</option>
-                <option>Erode</option>
-                <option>Tiruppur</option>
-                <option>Coimbatore</option>
-                <option>Karur</option>
-                <option>Others</option>
-            </select>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <select id="city" class="form-select" name="city">
-                <option value="" selected disabled>Select City *</option>
-                <!-- Erode District -->
-                <option value="Erode">Erode</option>
-                <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
-                <option value="Perundurai">Perundurai</option>
-                <option value="Sathyamangalam">Sathyamangalam</option>
-                <option value="Bhavani">Bhavani</option>
-                <option value="Anthiyur">Anthiyur</option>
-                <!-- Tiruppur District -->
-                <option value="Tiruppur">Tiruppur</option>
-                <option value="Dharapuram">Dharapuram</option>
-                <option value="Udumalaipettai">Udumalaipettai</option>
-                <option value="Avinashi">Avinashi</option>
-                <option value="Palladam">Palladam</option>
-                <option value="Kangeyam">Kangeyam</option>
-                <!-- Coimbatore District -->
-                <option value="Coimbatore">Coimbatore</option>
-                <option value="Pollachi">Pollachi</option>
-                <option value="Mettupalayam">Mettupalayam</option>
-                <option value="Valparai">Valparai</option>
-                <option value="Sulur">Sulur</option>
-                <option value="Kinathukadavu">Kinathukadavu</option>
-                <!-- Karur District -->
-                <option value="Karur">Karur</option>
-                <option value="Kulithalai">Kulithalai</option>
-                <option value="Aravakurichi">Aravakurichi</option>
-                <option value="Krishnarayapuram">Krishnarayapuram</option>
-                <option value="Pugalur">Pugalur</option>
-                <option value="Pugalur">Others</option>
-            </select>
-        </div>
-        <div class="col-md-6 mb-3">
-            <input type="text" id="Pincode" class="form-control" placeholder="Pincode *" name="pincode">
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-secondary ">Register</button>
-
-    </div>
     </div>
 </form><br><br>
 
 </body>
 <script>
-    function togglePassword() {
-        const passwordField = document.getElementById("passwordField");
-        const eyeIcon = document.getElementById("eyeIcon");
-
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
-        } else {
-            passwordField.type = "password";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
-        }
-    }
 
     function validateForm() {
 
@@ -377,7 +344,7 @@
         let lastName = document.getElementById("last_name").value.trim();
         let phone = document.getElementById("phone").value.trim();
         let email = document.getElementById("email").value.trim();
-        let password = document.getElementById("passwordField").value;
+        let password = document.getElementById("regPasswordField").value;
         let confirmPassword = document.getElementById("confirm_password").value;
         let dob = document.getElementById("dob").value;
         let gender = document.getElementById("gender").value;

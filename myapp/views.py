@@ -64,11 +64,6 @@ def worker_register(request):
             messages.warning(request, "Email already registered!")
             return redirect("worker_reg")
 
-        # # Check date of birth
-        #   if not dob:
-        #     messages.warning(request, "Date of birth is required!")
-        #     return redirect("worker_reg")
-
           worker=Worker()
           worker.first_name=first_name
           worker.last_name=last_name
@@ -89,8 +84,7 @@ def worker_register(request):
           worker.pincode=pincode
 
           worker.save()
-
-
+          
           messages.success(request, "Worker Registered Successfully")
           return redirect("worker_reg")
      return render(request, "worker_register.html")

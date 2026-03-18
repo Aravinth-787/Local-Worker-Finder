@@ -19,9 +19,10 @@
 
 </head>
 <style>
-  *{
+  * {
     font-family: Georgia, 'Times New Roman', Times, serif;
   }
+
   .fa-magnifying-glass:hover {
     font-size: x-large;
     color: #8f4444;
@@ -808,47 +809,48 @@
     color: var(--secondary-color);
     padding-left: 40px;
   }
+
   /* ===== ROOT COLORS ===== */
-:root {
-  --primary-color: rgb(208, 208, 208);
-  --secondary-color: #8f4444;
-  --text-dark: #333;
-  --text-light: #666;
-}
+  :root {
+    --primary-color: rgb(208, 208, 208);
+    --secondary-color: #8f4444;
+    --text-dark: #333;
+    --text-light: #666;
+  }
 
-/* Navbar general */
-.navbar {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+  /* Navbar general */
+  .navbar {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 
-/* Navbar Brand & Icon */
-.navbar-brand {
-  color: var(--text-dark) !important;
-  font-weight: 600;
-}
+  /* Navbar Brand & Icon */
+  .navbar-brand {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+  }
 
-.navbar-brand i {
-  color: var(--secondary-color);
-  margin-right: 8px;
-}
+  .navbar-brand i {
+    color: var(--secondary-color);
+    margin-right: 8px;
+  }
 
-/* Navbar Login Button */
-.navbar .btn-light {
-  background-color: var(--secondary-color) !important;
-  color: #fff !important;
-  border: none;
-  padding: 8px 20px;
-  font-weight: 600;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-}
+  /* Navbar Login Button */
+  .navbar .btn-light {
+    background-color: var(--secondary-color) !important;
+    color: #fff !important;
+    border: none;
+    padding: 8px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
 
-.navbar .btn-light:hover {
-  background-color: #6f3535 !important;
-  color: #fff !important;
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(143, 68, 68, 0.4);
-}
+  .navbar .btn-light:hover {
+    background-color: #6f3535 !important;
+    color: #fff !important;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.4);
+  }
 </style>
 
 <body>
@@ -932,8 +934,6 @@
 
     </div>
   </nav>
-  {% block content %}
-
 
   <!-- -----------login model---------------------------- -->
   <form action="/login" method="POST">
@@ -953,21 +953,19 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form>
-              <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Username" id="recipient-name" name="first_name">
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Username" id="login-username" name="first_name">
+            </div>
+            <div class="mb-3">
+              <div class="input-group">
+                <input type="password" class="form-control" id="loginPasswordField" name="password"
+                  placeholder="Password">
+                <span class="input-group-text" onclick="togglePassword('loginPasswordField', 'loginEyeIcon')"
+                  style="cursor:pointer;">
+                  <i class="fa-solid fa-eye" id="loginEyeIcon"></i>
+                </span>
               </div>
-              <div class="mb-3">
-
-                <div class="input-group">
-                  <input type="password" class="form-control" id="passwordField" name="password" placeholder="Password">
-                  <span class="input-group-text" onclick="togglePassword()" style="cursor:pointer;">
-                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
-                  </span>
-                </div>
-
-              </div>
-            </form>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-outline-secondary" data-bs-dismiss="modal">Login</button>
@@ -976,6 +974,8 @@
       </div>
     </div>
   </form>
+
+  {% block content %}
 
   <!-- -----------------------CAROUSAL--------------- -->
   <div class="slider" id="home">
@@ -1531,6 +1531,7 @@
     </div>
   </footer>
 
+
   {% endblock %}
 
 </body>
@@ -1559,9 +1560,9 @@
     setInterval(nextSlide, 3000);
   });
 
-  function togglePassword() {
-    var password = document.getElementById("passwordField");
-    var icon = document.getElementById("eyeIcon");
+  function togglePassword(fieldId, iconId) {
+    var password = document.getElementById(fieldId);
+    var icon = document.getElementById(iconId);
 
     if (password.type === "password") {
       password.type = "text";
@@ -1575,4 +1576,5 @@
   }
 
 </script>
+
 </html>
