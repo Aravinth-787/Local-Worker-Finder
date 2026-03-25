@@ -119,6 +119,9 @@ class Feedback(models.Model):
     booking=models.ForeignKey(Booking, on_delete=models.CASCADE)
     rating=models.IntegerField(choices=RATING_CHOICES)
     comment=models.TextField()
+    upload_image=models.ImageField(upload_to='feedback_images/', blank=True, null=True)
+    upload_image2=models.ImageField(upload_to='feedback_images/', blank=True, null=True)
+    upload_image3=models.ImageField(upload_to='feedback_images/', blank=True, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
 
     class Meta:

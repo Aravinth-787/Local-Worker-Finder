@@ -34,6 +34,75 @@
         background: white !important; 
     }
 
+    .filter-container {
+        background: white;
+        padding: 8px 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 20px;
+        border-left: 4px solid #8f4444;
+    }
+
+    .filter-item {
+        flex: 1;
+    }
+
+    .filter-label {
+        font-size: 0.75rem;
+        color: #777;
+        margin-bottom: 4px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-label i {
+        margin-right: 10px; /* Space between icon and text */
+        font-size: 0.85rem; /* Reduced size */
+        color: #8f4444;
+        width: 14px;
+        text-align: center;
+    }
+
+    .form-select-sm {
+        border: 1px solid #eee;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 4px 10px;
+        background-color: #fafafa;
+    }
+
+    .btn-filter-clear {
+        color: #8f4444;
+        text-decoration: none;
+        font-size: 1.1rem;
+        margin-left: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-filter-clear:hover {
+        color: #6f3535;
+        transform: rotate(90deg);
+    }
+
+    @media (max-width: 768px) {
+        .filter-container {
+            flex-direction: column;
+            gap: 10px;
+        }
+        .filter-item {
+            width: 100%;
+        }
+    }
+
+    /* Existing styles continue... */
     .worker-name {
         font-size: 1.3rem;
         font-weight: 600;
@@ -73,7 +142,6 @@
 
     .page-title {
         color: #333;
-        margin-bottom: 30px;
         font-weight: 700;
         text-align: left;
     }
@@ -111,10 +179,41 @@
 {% block content %}
 
 <div class="container worker-list-container">
-    <h2 class="page-title text-start">
-        <a href="/category/{{ category }}/"><img src="{%static 'images/left-arrow.png'%}" alt="" width="20px" height="20px"></a>
-        <i class="fa-solid fa-briefcase"></i> {{ category }} - {{ worker_type }}
-    </h2>
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-6">
+            <h2 class="page-title mb-0">
+                <a href="/category/{{ category }}/"><img src="{%static 'images/left-arrow.png'%}" alt="" width="20px" height="20px"></a>
+                <i class="fa-solid fa-briefcase"></i> {{ category }} - {{ worker_type }}
+            </h2>
+        </div>
+        <div class="col-lg-6 mt-3 mt-lg-0">
+            <form method="GET" class="filter-container">
+                <div class="filter-item">
+                    <label class="filter-label"><i class="fa-solid fa-star"></i> Min Rating</label>
+                    <select name="rating" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">All Ratings</option>
+                        <option value="5" {% if selected_rating == "5" %}selected{% endif %}>5 Stars</option>
+                        <option value="4" {% if selected_rating == "4" %}selected{% endif %}>4+ Stars</option>
+                        <option value="3" {% if selected_rating == "3" %}selected{% endif %}>3+ Stars</option>
+                        <option value="2" {% if selected_rating == "2" %}selected{% endif %}>2+ Stars</option>
+                        <option value="1" {% if selected_rating == "1" %}selected{% endif %}>1+ Star</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label class="filter-label"><i class="fa-solid fa-location-dot"></i>&nbsp;&nbsp;&nbsp;City/Location</label>
+                    <select name="city" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">All Locations</option>
+                        {% for city in available_cities %}
+                        <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if selected_rating or selected_city %}
+                <a href="?" class="btn-filter-clear" title="Clear Filters"><i class="fa-solid fa-circle-xmark"></i></a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 
     {% if workers %}
     <div class="row text-start">
@@ -122,7 +221,10 @@
         <div class="col-lg-6 mb-4">
             <div class="worker-card text-start">
                 <div class="worker-name">
-                    {{ worker.first_name }} {{ worker.last_name }}
+                    {{ worker.first_name }} {{ worker.last_name }} 
+                    <span class="ms-2 text-warning" style="font-size: 1.09rem;">
+                        (<i class="fa-solid fa-star"></i> {{ worker.avg_rating|floatformat:1|default:"0.0" }})
+                    </span>
                 </div>
                 <div class="worker-info">
                     <strong><i class="fa-solid fa-briefcase"></i> Type:</strong> {{ worker.worker_type }}
@@ -133,9 +235,84 @@
                 <div class="worker-info">
                     <strong><i class="fa-solid fa-star"></i> Experience:</strong> {{ worker.experience }} years
                 </div>
+                <button class="btn btn-see-more" data-bs-toggle="modal" data-bs-target="#userReviewModal{{ worker.id }}">
+                    <i class="fa-solid fa-user"></i> User Reviews
+                </button>
                 <button class="btn btn-see-more" data-bs-toggle="modal" data-bs-target="#workerModal{{ worker.id }}">
                     <i class="fa-solid fa-eye"></i> See More
                 </button>
+            </div>
+        </div>
+
+        <!-- User Reviews Modal -->
+        <div class="modal fade" id="userReviewModal{{ worker.id }}" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content text-start">
+                    <div class="modal-header" style="background-color: rgb(208, 208, 208); border-bottom: 2px solid #8f4444;">
+                        <h5 class="modal-title" style="color: #333; font-weight: 700;">
+                            <i class="fa-solid fa-star"></i> Reviews for {{ worker.first_name }} {{ worker.last_name }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="background-color: #f8f9fa; padding: 25px;">
+                        {% if worker.feedback_set.all %}
+                            {% for f in worker.feedback_set.all %}
+                            <div class="card border-0 shadow-sm mb-4" style="border-left: 5px solid #8f4444 !important; border-radius: 10px;">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0" style="color: #333; font-weight: 700;">
+                                            <i class="fa-solid fa-user-circle"></i> {{ f.user.first_name }}
+                                        </h6>
+                                        <span class="text-warning">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= f.rating %}
+                                                    <i class="fa-solid fa-star"></i>
+                                                {% else %}
+                                                    <i class="fa-regular fa-star" style="color: #ddd;"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                    <p class="mb-2" style="color: #555; font-style: italic;">"{{ f.comment }}"</p>
+                                    
+                                    <!-- Photos taken by user -->
+                                    <div class="d-flex gap-2 flex-wrap mt-2">
+                                        {% if f.upload_image %}
+                                        <a href="{{ f.upload_image.url }}" target="_blank">
+                                            <img src="{{ f.upload_image.url }}" alt="Review Photo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                        </a>
+                                        {% endif %}
+                                        {% if f.upload_image2 %}
+                                        <a href="{{ f.upload_image2.url }}" target="_blank">
+                                            <img src="{{ f.upload_image2.url }}" alt="Review Photo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                        </a>
+                                        {% endif %}
+                                        {% if f.upload_image3 %}
+                                        <a href="{{ f.upload_image3.url }}" target="_blank">
+                                            <img src="{{ f.upload_image3.url }}" alt="Review Photo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="text-end mt-2">
+                                        <small class="text-muted" style="font-size: 0.8rem;">
+                                            <i class="fa-solid fa-calendar-day"></i> {{ f.created_at|date:"d M Y" }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fa-solid fa-comments" style="font-size: 3rem; color: #ddd; margin-bottom: 15px;"></i>
+                                <p class="text-muted">No reviews yet for this worker.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -148,43 +325,43 @@
                         {{ worker.first_name }} {{ worker.last_name }} - Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 5px;">Personal Details</h6>
-                                <p><strong>Name:</strong> {{ worker.first_name }} {{ worker.last_name }}</p>
-                                <p><strong>Email:</strong> {{ worker.email }}</p>
-                                <p><strong>Phone:</strong> {{ worker.phone }}</p>
-                                <p><strong>Gender:</strong> {{ worker.gender }}</p>
+                    <div class="modal-body" style="padding: 15px 25px;">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 3px; font-size: 0.9rem;">Personal Details</h6>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Name:</strong> {{ worker.first_name }} {{ worker.last_name }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Email:</strong> {{ worker.email }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Phone:</strong> {{ worker.phone }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Gender:</strong> {{ worker.gender }}</p>
                             </div>
-                            <div>
-                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 5px;">Work Details</h6>
-                                <p><strong>Category:</strong> {{ worker.category }}</p>
-                                <p><strong>Worker Type:</strong> {{ worker.worker_type }}</p>
-                                <p><strong>Experience:</strong> {{ worker.experience }} years</p>
-                                <p><strong>Service Area:</strong> {{ worker.service_area }}</p>
+                            <div class="col-md-4">
+                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 3px; font-size: 0.9rem;">Work Details</h6>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Category:</strong> {{ worker.category }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Worker Type:</strong> {{ worker.worker_type }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Experience:</strong> {{ worker.experience }} years</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Service Area:</strong> {{ worker.service_area }}</p>
                             </div>
-                            <div>
-                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 5px;">Address</h6>
-                                <p><strong>State:</strong> {{ worker.state }}</p>
-                                <p><strong>District:</strong> {{ worker.district }}</p>
-                                <p><strong>City:</strong> {{ worker.city }}</p>
-                                <p><strong>Pincode:</strong> {{ worker.pincode }}</p>
+                            <div class="col-md-4">
+                                <h6 style="color: #8f4444; font-weight: 600; border-bottom: 2px solid #8f4444; padding-bottom: 3px; font-size: 0.9rem;">Address</h6>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>State:</strong> {{ worker.state }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>District:</strong> {{ worker.district }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>City:</strong> {{ worker.city }}</p>
+                                <p class="mb-1" style="font-size: 0.85rem;"><strong>Pincode:</strong> {{ worker.pincode }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer" style="border-top: 3px solid rgb(208, 208, 208); background-color: #f9f9f9; display: block;">
+                    <div class="modal-footer" style="border-top: 3px solid rgb(208, 208, 208); background-color: #f9f9f9; display: block; padding: 10px 25px;">
                         {% if request.session.user_type == 'user' %}
                         <form method="POST" action="{% url 'create_booking' %}" style="width: 100%;">
                             {% csrf_token %}
                             <input type="hidden" name="worker_id" value="{{ worker.id }}">
                             <input type="hidden" name="service_type" value="{{ worker_type }}">
-                            <div class="mb-3 text-start">
-                                <label for="description{{ worker.id }}" class="form-label" style="font-weight: 600; color: #333;">Describe the work or complaint</label>
-                                <textarea class="form-control" id="description{{ worker.id }}" name="description" rows="3" required placeholder="Type the work details..."></textarea>
+                            <div class="mb-2 text-start">
+                                <label for="description{{ worker.id }}" class="form-label mb-1" style="font-weight: 600; color: #333; font-size: 0.9rem;">Describe the work or complaint</label>
+                                <textarea class="form-control" id="description{{ worker.id }}" name="description" rows="2" required placeholder="Type the work details..." style="font-size: 0.9rem;"></textarea>
                             </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary" style="background-color: #8f4444; border: none; color: white; padding: 10px 25px; font-weight: 600;">
+                                <button type="submit" class="btn btn-primary" style="background-color: #8f4444; border: none; color: white; padding: 6px 20px; font-weight: 600; font-size: 0.9rem;">
                                     <i class="fa-solid fa-check"></i> Assign
                                 </button>
                             </div>
@@ -210,19 +387,4 @@
     {% endif %}
 </div>
 
-<script>
-    function togglePasswordList() {
-        var password = document.getElementById("passwordFieldList");
-        var icon = document.getElementById("eyeIconList");
-        if (password.type === "password") {
-            password.type = "text";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-        } else {
-            password.type = "password";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-        }
-    }
-</script>
 {% endblock %}

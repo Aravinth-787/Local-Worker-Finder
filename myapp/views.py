@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from .models import Worker, User, Booking, Feedback, Category
+from django.db.models import Avg, Q
 
 # Create your views here.
 def home(request):
@@ -195,6 +196,7 @@ def admin_dashboard(request):
     workers_count=Worker.objects.count()
     users_count=User.objects.count()
     bookings_count=Booking.objects.count()
+    active_bookings_count=Booking.objects.exclude(status__in=['completed', 'cancelled', 'rejected', 'not_available']).count()
     feedbacks_count=Feedback.objects.count()
     
     from django.db.models import Exists, OuterRef
@@ -202,7 +204,7 @@ def admin_dashboard(request):
         is_busy=Exists(
             Booking.objects.filter(
                 worker=OuterRef('pk'),
-                status__in=['in_progress', 'accepted']
+                status__in=['in_progress', 'accepted', 'started', 'almost_done']
             )
         )
     )
@@ -215,6 +217,7 @@ def admin_dashboard(request):
         'workers_count': workers_count,
         'users_count': users_count,
         'bookings_count': bookings_count,
+        'active_bookings_count': active_bookings_count,
         'feedbacks_count': feedbacks_count,
         'workers': workers,
         'users': users,
@@ -399,18 +402,35 @@ def my_profile(request):
     })
 
 
-# --------------- WORKER LIST ---------------------------------------
 def worker_list(request, category, worker_type):
-    workers=Worker.objects.filter(category=category, worker_type=worker_type)
-    
-    if not workers.exists():
-        normalized_type=worker_type.replace(' / ', '_').replace(' ', '_')
-        workers=Worker.objects.filter(category=category, worker_type=normalized_type)
+    rating_filter = request.GET.get('rating')
+    city_filter = request.GET.get('city')
 
-    context={
+    normalized_type = worker_type.replace(' / ', '_').replace(' ', '_')
+    workers = Worker.objects.filter(
+        Q(category=category) & 
+        (Q(worker_type=worker_type) | Q(worker_type=normalized_type))
+    )
+
+    # Annotate average rating
+    workers = workers.annotate(avg_rating=Avg('feedback__rating'))
+
+    available_cities = workers.values_list('city', flat=True).distinct().order_by('city')
+
+    # Apply filters if provided
+    if rating_filter and rating_filter.isdigit():
+        workers = workers.filter(avg_rating__gte=int(rating_filter))
+    
+    if city_filter:
+        workers = workers.filter(city=city_filter)
+
+    context = {
         'category': category,
         'worker_type': worker_type,
-        'workers': workers
+        'workers': workers,
+        'available_cities': available_cities,
+        'selected_rating': rating_filter,
+        'selected_city': city_filter,
     }
     
     return render(request, "worker_list.html", context)
@@ -558,6 +578,9 @@ def post_feedback(request):
         booking_id=request.POST.get("booking")
         rating=request.POST.get("rating")
         comment=request.POST.get("comment")
+        upload_image=request.FILES.get("upload_image")
+        upload_image2=request.FILES.get("upload_image2")
+        upload_image3=request.FILES.get("upload_image3")
         
         try:
             user=User.objects.get(id=user_id)
@@ -569,16 +592,65 @@ def post_feedback(request):
                 worker=worker,
                 booking=booking,
                 rating=rating,
-                comment=comment
+                comment=comment,
+                upload_image=upload_image,
+                upload_image2=upload_image2,
+                upload_image3=upload_image3
             )
             feedback.save()
             
             messages.success(request, "Feedback Posted Successfully!")
             return redirect("my_profile")
-        except:
+        except Exception as e:
+            print(f"Error: {e}")
             messages.error(request, "Error posting feedback!")
             return redirect("my_profile")
     
     return redirect("my_profile")
 
 
+
+# --------------- ADMIN: DELETE OPERATIONS -----------------------
+def delete_worker(request, id):
+    if request.session.get('user_type') != 'admin':
+        return redirect("home")
+    try:
+        worker = Worker.objects.get(id=id)
+        worker.delete()
+        messages.success(request, "Worker deleted successfully.")
+    except Worker.DoesNotExist:
+        messages.error(request, "Worker not found.")
+    return redirect("admin_dashboard")
+
+def delete_user(request, id):
+    if request.session.get('user_type') != 'admin':
+        return redirect("home")
+    try:
+        user_obj = User.objects.get(id=id)
+        user_obj.delete()
+        messages.success(request, "User deleted successfully.")
+    except User.DoesNotExist:
+        messages.error(request, "User not found.")
+    return redirect("admin_dashboard")
+
+def delete_booking(request, id):
+    if request.session.get('user_type') != 'admin':
+        return redirect("home")
+    try:
+        booking = Booking.objects.get(id=id)
+        booking.delete()
+        messages.success(request, "Booking deleted successfully.")
+    except Booking.DoesNotExist:
+        messages.error(request, "Booking not found.")
+    return redirect("admin_dashboard")
+
+def delete_feedback(request, id):
+    if request.session.get('user_type') != 'admin':
+        return redirect("home")
+    try:
+        feedback = Feedback.objects.get(id=id)
+        feedback.delete()
+        messages.success(request, "Feedback deleted successfully.")
+    except Feedback.DoesNotExist:
+        messages.error(request, "Feedback not found.")
+    return redirect("admin_dashboard")

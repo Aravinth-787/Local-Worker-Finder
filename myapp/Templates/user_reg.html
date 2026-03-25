@@ -52,120 +52,116 @@
     <div class="card shadow p-4">
         <h4 class="text-center mb-4">User Registration</h4>
 
-        <form action="/user_register" method="POST" onsubmit="return validateUserForm()">
-            {% csrf_token %}
-            <!-- PERSONAL DETAILS -->
-            <h5>Personal Details</h5>
-            <div class="row">
+<form action="/user_register" method="POST" onsubmit="return validateUserForm()">
+{% csrf_token %}
+<!-- PERSONAL DETAILS -->
+    <h5>Personal Details</h5>
+        <div class="row">
 
-                <div class="col-md-6 mb-3">
-                    <input type="text" id="first_name" class="form-control" placeholder="First Name *"
-                        name="first_name">
-                </div>
+        <div class="col-md-6 mb-3">
+          <input type="text" id="first_name" class="form-control" placeholder="First Name *" name="first_name">
+        </div>
 
-                <div class="col-md-6 mb-3">
-                    <input type="text" id="last_name" class="form-control" placeholder="Last Name *" name="last_name">
-                </div>
+        <div class="col-md-6 mb-3">
+          <input type="text" id="last_name" class="form-control" placeholder="Last Name *" name="last_name">
+        </div>
 
-                <div class="col-md-6 mb-3">
-                    <input type="email" id="email" class="form-control" placeholder="Email *" name="email">
-                </div>
+        <div class="col-md-6 mb-3">
+          <input type="email" id="email" class="form-control" placeholder="Email *" name="email">
+        </div>
 
-                <div class="col-md-6 mb-3">
-                    <input type="tel" id="phone" class="form-control" placeholder="Phone Number *" name="phone">
-                </div>
+        <div class="col-md-6 mb-3">
+          <input type="tel" id="phone" class="form-control" placeholder="Phone Number *" name="phone">
+        </div>
 
-                <div class="col-md-6 mb-3">
-                    <div class="input-group">
-                        <input type="password" id="regPasswordField" class="form-control" placeholder="Password *"
-                            name="password">
+        <div class="col-md-6 mb-3">
+          <div class="input-group">
+            <input type="password" id="regPasswordField" class="form-control" placeholder="Password *" name="password">
 
-                        <span class="input-group-text" onclick="togglePassword('regPasswordField', 'regEyeIcon')"
-                            style="cursor:pointer;">
-                            <i class="fa-solid fa-eye" id="regEyeIcon"></i>
-                        </span>
-                    </div>
-                </div>
+            <span class="input-group-text" onclick="togglePassword('regPasswordField', 'regEyeIcon')" style="cursor:pointer;">
+              <i class="fa-solid fa-eye" id="regEyeIcon"></i>
+            </span>
+          </div>
+        </div>
 
-                <div class="col-md-6 mb-3">
-                    <input type="password" id="confirm_password" class="form-control" placeholder="Confirm Password *">
-                </div>
+        <div class="col-md-6 mb-3">
+          <input type="password" id="confirm_password" class="form-control" placeholder="Confirm Password *">
+        </div>
 
-                <!-- ADDRESS DETAILS -->
-                <h5 class="mt-3">Address Details</h5>
-                <div class="row">
+        <!-- ADDRESS DETAILS -->
+        <h5 class="mt-3">Address Details</h5>
+        <div class="row">
 
-                    <div class="col-md-6 mb-3">
-                        <select id="state" class="form-select" name="state">
-                            <option value="">Select State *</option>
-                            <option>Tamil Nadu</option>
-                            <option>Others</option>
-                        </select>
-                    </div>
+          <div class="col-md-6 mb-3">
+            <select id="state" class="form-select" name="state">
+              <option value="">Select State *</option>
+              <option>Tamil Nadu</option>
+              <option>Others</option>
+            </select>
+          </div>
 
-                    <div class="col-md-6 mb-3">
-                        <select id="district" class="form-select" name="district">
-                            <option value="">Select District *</option>
-                            <option>Erode</option>
-                            <option>Tiruppur</option>
-                            <option>Coimbatore</option>
-                            <option>Karur</option>
-                            <option>Others</option>
-                        </select>
-                    </div>
+          <div class="col-md-6 mb-3">
+            <select id="district" class="form-select" name="district">
+              <option value="">Select District *</option>
+              <option>Erode</option>
+              <option>Tiruppur</option>
+              <option>Coimbatore</option>
+              <option>Karur</option>
+              <option>Others</option>
+            </select>
+          </div>
 
-                    <div class="col-md-6 mb-3">
-                        <select id="city" class="form-select" name="city">
-                            <option value="">Select City *</option>
-                            <!-- Erode District -->
-                            <option value="Erode">Erode</option>
-                            <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
-                            <option value="Perundurai">Perundurai</option>
-                            <option value="Sathyamangalam">Sathyamangalam</option>
-                            <option value="Bhavani">Bhavani</option>
-                            <option value="Anthiyur">Anthiyur</option>
-                            <!-- Tiruppur District -->
-                            <option value="Tiruppur">Tiruppur</option>
-                            <option value="Dharapuram">Dharapuram</option>
-                            <option value="Udumalaipettai">Udumalaipettai</option>
-                            <option value="Avinashi">Avinashi</option>
-                            <option value="Palladam">Palladam</option>
-                            <option value="Kangeyam">Kangeyam</option>
-                            <!-- Coimbatore District -->
-                            <option value="Coimbatore">Coimbatore</option>
-                            <option value="Pollachi">Pollachi</option>
-                            <option value="Mettupalayam">Mettupalayam</option>
-                            <option value="Valparai">Valparai</option>
-                            <option value="Sulur">Sulur</option>
-                            <option value="Kinathukadavu">Kinathukadavu</option>
-                            <!-- Karur District -->
-                            <option value="Karur">Karur</option>
-                            <option value="Kulithalai">Kulithalai</option>
-                            <option value="Aravakurichi">Aravakurichi</option>
-                            <option value="Krishnarayapuram">Krishnarayapuram</option>
-                            <option value="Pugalur">Pugalur</option>
-                            <option>Others</option>
-                        </select>
-                    </div>
+          <div class="col-md-6 mb-3">
+            <select id="city" class="form-select" name="city">
+              <option value="">Select City *</option>
+              <!-- Erode District -->
+              <option value="Erode">Erode</option>
+              <option value="Gobichettipalayam">Gobichettipalayam (Gobi)</option>
+              <option value="Perundurai">Perundurai</option>
+              <option value="Sathyamangalam">Sathyamangalam</option>
+              <option value="Bhavani">Bhavani</option>
+              <option value="Anthiyur">Anthiyur</option>
+              <!-- Tiruppur District -->
+              <option value="Tiruppur">Tiruppur</option>
+              <option value="Dharapuram">Dharapuram</option>
+              <option value="Udumalaipettai">Udumalaipettai</option>
+              <option value="Avinashi">Avinashi</option>
+              <option value="Palladam">Palladam</option>
+              <option value="Kangeyam">Kangeyam</option>
+              <!-- Coimbatore District -->
+              <option value="Coimbatore">Coimbatore</option>
+              <option value="Pollachi">Pollachi</option>
+              <option value="Mettupalayam">Mettupalayam</option>
+              <option value="Valparai">Valparai</option>
+              <option value="Sulur">Sulur</option>
+              <option value="Kinathukadavu">Kinathukadavu</option>
+              <!-- Karur District -->
+              <option value="Karur">Karur</option>
+              <option value="Kulithalai">Kulithalai</option>
+              <option value="Aravakurichi">Aravakurichi</option>
+              <option value="Krishnarayapuram">Krishnarayapuram</option>
+              <option value="Pugalur">Pugalur</option>
+              <option>Others</option>
+            </select>
+          </div>
 
-                    <div class="col-md-6 mb-3">
-                        <input type="text" id="full_address" class="form-control" placeholder="Full Address *"
-                            name="full_address">
-                    </div>
+          <div class="col-md-6 mb-3">
+            <input type="text" id="full_address" class="form-control" placeholder="Full Address *" name="full_address">
+          </div>
 
-                    <div class="col-md-6 mb-3">
-                        <input type="text" id="landmark" class="form-control" placeholder="Landmark " name="landmark">
-                    </div>
+          <div class="col-md-6 mb-3">
+            <input type="text" id="landmark" class="form-control" placeholder="Landmark " name="landmark">
+          </div>
 
-                    <div class="col-md-6 mb-3">
-                        <input type="text" id="pincode" class="form-control" placeholder="Pincode *" name="pincode">
-                    </div>
+          <div class="col-md-6 mb-3">
+            <input type="text" id="pincode" class="form-control" placeholder="Pincode *" name="pincode">
+          </div>
 
-                </div>
+        </div>
 
-                <button type="submit" class="btn btn-secondary w-100">Register</button>
+        <button type="submit" class="btn btn-secondary w-100">Register</button>
 
-        </form>
+</form>
     </div>
 </div><br><br>
 

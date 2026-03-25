@@ -19,6 +19,11 @@ urlpatterns=[
     path("update_booking_status/<int:booking_id>/",views.update_booking_status,name="update_booking_status"),
     path("post_feedback",views.post_feedback,name="post_feedback"),
     
+    path("delete_worker/<int:id>/", views.delete_worker, name="delete_worker"),
+    path("delete_user/<int:id>/", views.delete_user, name="delete_user"),
+    path("delete_booking/<int:id>/", views.delete_booking, name="delete_booking"),
+    path("delete_feedback/<int:id>/", views.delete_feedback, name="delete_feedback"),
+    
     path("workers/<str:category>/<path:worker_type>/", views.worker_list, name="worker_list"),
     path("create_booking", views.create_booking, name="create_booking"),
     path("booking_confirmation/<int:booking_id>/", views.booking_confirmation, name="booking_confirmation"),

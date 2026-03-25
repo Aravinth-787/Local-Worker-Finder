@@ -851,6 +851,81 @@
     transform: scale(1.08);
     box-shadow: 0 4px 12px rgba(143, 68, 68, 0.4);
   }
+
+  /* ===== CUSTOM GLOBAL DROPDOWN STYLES ===== */
+  select.form-select, select {
+    cursor: pointer;
+    background-color: #fff;
+    color: var(--text-dark);
+    border: 1px solid var(--primary-color);
+  }
+  
+  select.form-select:focus, select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 5px rgba(143, 68, 68, 0.4);
+  }
+
+  select option {
+    background-color: #ffffff;
+    color: var(--text-dark);
+    padding: 10px;
+    font-size: 15px;
+  }
+  
+  select option:checked, 
+  select option:hover,
+  select option:focus {
+    background-color: var(--secondary-color) !important;
+    color: #ffffff !important;
+  }
+
+  /* ===== NAVBAR RESPONSIVE ===== */
+  .user-auth-nav {
+    margin-left: 35% !important; 
+    position: relative; 
+    left: 25px;
+  }
+
+  @media (max-width: 992px) {
+    .searchbox {
+      margin-left: 10px;
+      width: 200px;
+    }
+    .user-auth-nav {
+      margin-left: auto !important;
+      left: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .searchbox {
+      width: 140px;
+    }
+    #searchtext {
+      width: 70%;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .navbar-brand {
+      font-size: 15px;
+    }
+    .searchbox {
+      width: 140px;
+      padding: 6px 10px;
+      margin-left: 0px;
+      margin-top: 8px;
+    }
+    .navbar .btn-light {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .user-auth-nav {
+      gap: 10px !important;
+      margin-top: 8px;
+    }
+  }
 </style>
 
 <body>
@@ -858,8 +933,8 @@
   <!-- Navbar -->
   <!-- site name & logo  ------------------------------------------------------------>
   <nav class="navbar fixed-top" style="background-color:rgb(208, 208, 208);">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/"><b><i class="fa-solid fa-people-roof"></i> Local Worker Finder</b></a>
+    <div class="container-fluid flex-wrap flex-md-nowrap">
+      <a class="navbar-brand" href="/"><b><i class="fa-solid fa-people-roof"></i> <span class="navbar-brand-text">Local Worker Finder</span></b></a>
 
       <!-- search bar------------------------------------------------------------------- -->
       <form action="{% url 'search_worker' %}" method="GET" style="display: inline;">
@@ -878,7 +953,7 @@
       
     </div> -->
 
-      <div class="d-flex align-items-center gap-2" style="margin-left: 35% !important; position: relative; left: 25px;">
+      <div class="d-flex align-items-center gap-2 user-auth-nav">
 
         {% if request.session.user_type %}
 
@@ -1361,7 +1436,7 @@
 
   <section class="faq-section">
     <div class="container">
-      <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+      <h3 class="text-center mb-2">Frequently Asked Questions</h3>
 
       <div class="accordion accordion-flush" id="accordionFlushExample">
 
