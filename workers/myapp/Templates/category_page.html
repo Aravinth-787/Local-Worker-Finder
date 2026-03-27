@@ -1,0 +1,47 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}Category - {{ category }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/category_page.css' %}">
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f5f5 0%, rgb(208, 208, 208) 100%) !important;
+        min-height: 100vh;
+    }
+    .category-container {
+        margin-top: 70px;
+        margin-bottom: 50px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container category-container">
+    <h1>{{ category }}</h1>
+
+    {% if subservices %}
+    <div class="row">
+        {% for s in subservices %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ s }}</h5>
+                    <a href="{% url 'worker_list' category s %}" class="btn-light">
+                        View workers <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert">
+        No related works found for this category.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

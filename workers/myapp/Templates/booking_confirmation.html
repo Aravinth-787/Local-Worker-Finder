@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <style>
+         *{
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+        .navbar {
+            background-color: rgb(208, 208, 208);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 15px 0;
+        }
+        
+        .container {
+            margin-top: 100px;
+        }
+        
+        .confirmation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #8f4444;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .success-icon {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .success-icon i {
+            font-size: 3rem;
+            color: #28a745;
+        }
+        
+        .confirmation-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .confirmation-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .booking-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #8f4444;
+            margin-bottom: 30px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .detail-value {
+            color: #666;
+        }
+        
+        .booking-number {
+            background: linear-gradient(135deg, #8f4444 0%, #6f3535 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn-home, .btn-profile {
+            padding: 12px 30px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-home {
+            background-color: #8f4444;
+            color: white;
+        }
+        
+        .btn-home:hover {
+            background-color: #6f3535;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-profile {
+            background-color: rgb(208, 208, 208);
+            color: #333;
+        }
+        
+        .btn-profile:hover {
+            background-color: #d9d9d9;
+            color: #333;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        .btn-light {
+            background-color: rgb(122, 11, 11) !important;
+            color: #fff !important;
+            border: none;
+            padding: 8px 20px;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .btn-light:hover {
+            background-color: rgb(122, 11, 11) !important;
+            color: #fff !important;
+            text-decoration: none;
+            transform: translateY(-2px);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"><b><i class="fa-solid fa-people-roof"></i> Local Worker Finder</b></a>
+        <div class="d-flex align-items-center gap-2">
+             
+
+            <span class="fw-semibold">{{ request.session.name }}  <img src="{%static 'images/log.png'%}" alt="" height="30px" width="30px" style="border-radius: 50%;">
+</span>
+            <a class="btn btn-light btn-sm" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="confirmation-card">
+        <!-- Success Icon -->
+        <div class="success-icon">
+            <i class="fa-solid fa-check-circle"></i>
+        </div>
+        
+        <!-- Title -->
+        <h2 class="confirmation-title">Booking Confirmed!</h2>
+        <p class="confirmation-subtitle">Your booking has been successfully created.</p>
+        
+        <!-- Booking Number -->
+        <div class="booking-number">
+            <i class="fa-solid fa-receipt"></i> Booking #{{ booking.id }}
+        </div>
+        
+        <!-- Booking Details -->
+        <div class="booking-details">
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-user"></i> Worker Name</span>
+                <span class="detail-value">{{ booking.worker.first_name }} {{ booking.worker.last_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-briefcase"></i> Service Type</span>
+                <span class="detail-value">{{ booking.service_type }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-phone"></i> Worker Phone</span>
+                <span class="detail-value">{{ booking.worker.phone }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-envelope"></i> Worker Email</span>
+                <span class="detail-value">{{ booking.worker.email }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-map-location-dot"></i> Service Area</span>
+                <span class="detail-value">{{ booking.worker.service_area }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-calendar"></i> Booking Date</span>
+                <span class="detail-value">{{ booking.booking_date|date:"d-m-Y H:i" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label"><i class="fa-solid fa-tag"></i> Status</span>
+                <span class="detail-value" style="background-color: #fff3cd; padding: 5px 10px; border-radius: 4px; color: #856404;">
+                    {{ booking.get_status_display }}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Info Message -->
+        <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; border-radius: 6px; color: #0c5460; margin-bottom: 30px;">
+            <i class="fa-solid fa-info-circle"></i> 
+            <strong>Next Steps:</strong> The worker will review your booking and contact you soon at the phone number registered.
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/my_profile" class="btn-profile">
+                <i class="fa-solid fa-user"></i> View My Bookings
+            </a>
+            <a href="/" class="btn-home">
+                <i class="fa-solid fa-home"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

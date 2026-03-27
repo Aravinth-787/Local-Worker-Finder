@@ -1,0 +1,1655 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Local Worker Finder{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
+  {% block extra_css %}{% endblock %}
+
+</head>
+<style>
+  * {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+
+  .fa-magnifying-glass:hover {
+    font-size: x-large;
+    color: #8f4444;
+    transition: all 0.3s ease;
+  }
+
+  /* ===== ROOT COLORS ===== */
+  :root {
+    --primary-color: rgb(208, 208, 208);
+    --secondary-color: #8f4444;
+    --text-dark: #333;
+    --text-light: #666;
+  }
+
+  .fa-location-dot {
+    font-size: x-large;
+    margin-top: 2px;
+    padding-left: 20px;
+  }
+
+  .navbar .d-flex {
+    margin-left: 20%;
+  }
+
+  #location {
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .fa-bars {
+    font-size: larger;
+    color: var(--secondary-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .fa-bars:hover {
+    color: #6f3535;
+    transform: scale(1.1);
+  }
+
+  .navbar {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .navbar-brand {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+  }
+
+  .navbar-brand i {
+    color: var(--secondary-color);
+    margin-right: 8px;
+  }
+
+  /* ===== NAVBAR LOGIN BUTTON ===== */
+  .d-flex .btn-light {
+    background-color: var(--secondary-color) !important;
+    color: #fff !important;
+    border: none;
+    padding: 8px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .d-flex .btn-light:hover {
+    background-color: #6f3535 !important;
+    color: #fff !important;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.4);
+  }
+
+  /* ===== SEARCH BAR ===== */
+  .searchbox {
+    width: 270px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-left: 10%;
+    border: 2px solid var(--primary-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .searchbox:focus-within {
+    border-color: var(--secondary-color);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.2);
+  }
+
+  #searchtext {
+    border-style: none;
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    width: 85%;
+    background: transparent;
+  }
+
+  .fa-magnifying-glass {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .fa-magnifying-glass:hover {
+    font-size: 1.3rem;
+    color: #6f3535;
+  }
+
+  /* **************   slide bar******************* */
+  .slider {
+    width: 100%;
+    height: 530px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 5%;
+    margin-top: 4.5%;
+  }
+
+  .slides {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+  }
+
+  .slides img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .slides.active {
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .caption {
+    position: absolute;
+    bottom: 60px;
+    left: 100px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px 20px;
+    border-radius: 6px;
+  }
+
+
+  /* ******** FIND WORKERS************ */
+  .heading {
+    text-align: center;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 22px;
+    max-width: 1100px;
+    margin: auto;
+  }
+
+  .worker-card {
+    border-radius: 16px;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .worker-card:hover {
+    background: rgb(173, 173, 173);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.36);
+  }
+
+  .worker-card img {
+    width: 62px;
+    height: 62px;
+    margin-bottom: 16px;
+  }
+
+  .worker-card p {
+    font-size: 15px;
+    font-weight: 600;
+    color: black;
+    margin: 0;
+  }
+
+  .worker-card {
+    background: #fff;
+    padding: 25px 15px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .find-worker {
+    padding-bottom: 5%;
+  }
+
+  .find-worker h3 {
+    padding-bottom: 2.6%;
+  }
+
+  /* *****HOW IT WORKS********************************************** */
+  .how-it-works {
+    padding: 80px 0px;
+    text-align: center;
+    background-color: var(--primary-color);
+  }
+
+  .how-it-works h3 {
+    margin-bottom: 60px;
+  }
+
+  .steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .step {
+    max-width: 260px;
+  }
+
+  .step h3 {
+    margin-top: 20px;
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #000;
+  }
+
+  .step p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #444;
+  }
+
+  /* Moving Arrow */
+  .arrow {
+    font-size: 50px;
+    color: black;
+    animation: moveArrow 1.5s infinite;
+  }
+
+  @keyframes moveArrow {
+    0% {
+      transform: translateX(0);
+      opacity: 0.3;
+    }
+
+    50% {
+      transform: translateX(15px);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(0);
+      opacity: 0.3;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .steps {
+      flex-direction: column;
+    }
+
+    .arrow {
+      transform: rotate(90deg);
+      animation: moveArrowDown 1.5s infinite;
+    }
+
+    @keyframes moveArrowDown {
+      0% {
+        transform: translateY(0) rotate(90deg);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: translateY(15px) rotate(90deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(0) rotate(90deg);
+        opacity: 0.3;
+      }
+    }
+  }
+
+  /* *********POPULAR CATEGORIES***************** */
+  .popular-worker {
+    padding-top: 5%;
+  }
+
+  .category-section {
+    text-align: center;
+    padding-right: 40px;
+    padding-left: 40px;
+    padding-bottom: 100px;
+  }
+
+  .category-section h3 {
+    font-size: 32px;
+    margin-bottom: 40px;
+    padding-bottom: 2%;
+  }
+
+  .card-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+  }
+
+  .popular-worker-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--secondary-color);
+  }
+
+  .popular-worker-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(143, 68, 68, 0.2);
+    border-left-color: #6f3535;
+  }
+
+  .card-icon {
+    font-size: 45px;
+    margin-bottom: 15px;
+  }
+
+  .popular-worker-card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .popular-worker-card p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .card-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #6f3535 100%);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .card-btn:hover {
+    background: linear-gradient(135deg, #6f3535 0%, #4f2525 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.3);
+  }
+
+  /* **********WHY CHOOSE TO OUR PLATFORM********************************************** */
+  .choose-platform h3 {
+    padding-top: 4%;
+  }
+
+  .accordion-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    padding-left: 0px;
+  }
+
+  .accordion-flush {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-left: 190px;
+    padding-right: 190px;
+  }
+
+  .accordion-button {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background-color: #deeaff;
+    color: #333;
+  }
+
+  .accordion-flush .accordion-button {
+    padding: 1rem 1.25rem;
+  }
+
+  /* ********trust, safety*************************************** */
+  .trust_safety {
+    background-color: var(--primary-color);
+  }
+
+  .safety-trust {
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .safety-trust h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .safety-trust .subtitle {
+    color: #666;
+    margin-bottom: 40px;
+  }
+
+  .trust-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: auto;
+  }
+
+  .trust-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--secondary-color);
+  }
+
+  .trust-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(143, 68, 68, 0.2);
+    border-left-color: #6f3535;
+  }
+
+  .trust-box .icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+  }
+
+  .trust-box h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: var(--text-dark);
+  }
+
+  .trust-box p {
+    color: var(--text-light);
+    font-size: 14px;
+  }
+
+  /* *********FAQ******************** */
+  .faq-section {
+    padding: 60px 0;
+    background-color: white;
+  }
+
+  .faq-section h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+
+  .accordion-flush .accordion-item {
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .accordion-flush .accordion-button {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 18px 0;
+    background: none;
+    color: #222;
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background-color: transparent;
+  }
+
+  .accordion-body {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.7;
+    padding: 0 0 20px 0;
+  }
+
+  .accordion-button:hover {
+    color: rgb(165, 165, 165);
+  }
+
+  .accordion-collapse {
+    transition: all 0.3s ease;
+  }
+
+
+  /* ***********SERVICE OVERVIEW**************************** */
+  .service_overview h3 {
+    padding-bottom: 3%;
+  }
+
+  .quick-stats {
+    padding: 60px 20px;
+    background-color: var(--primary-color);
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  .stat-box {
+    background: #ffffff;
+    padding: 30px 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--secondary-color);
+  }
+
+  .stat-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(143, 68, 68, 0.2);
+    border-left-color: #6f3535;
+  }
+
+  .stat-box h3 {
+    font-size: 36px;
+    font-weight: 700;
+    color: rgb(44, 44, 44);
+    margin-bottom: 8px;
+  }
+
+  .stat-box p {
+    font-size: 15px;
+    color: #555;
+    font-weight: 500;
+  }
+
+
+  /* ***********FOOTER**************************************** */
+  /* Footer Main */
+  .site-footer {
+    background-color: #000;
+    color: #fff;
+    padding: 50px 20px 20px;
+    font-size: 14px;
+  }
+
+  /* Grid Layout */
+  .footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  /* Footer Headings */
+  .footer-column h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  .footer-column p {
+    color: #ccc;
+    line-height: 1.6;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .footer-column ul li {
+    margin-bottom: 10px;
+    color: #ccc;
+  }
+
+  .footer-column ul li a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-column ul li a:hover {
+    color: #fff;
+  }
+
+  /* Bottom Footer */
+  .footer-bottom {
+    text-align: center;
+    border-top: 1px solid #222;
+    margin-top: 30px;
+    padding-top: 15px;
+    color: #888;
+    font-size: 13px;
+  }
+
+  /* ========LOGIN MODAL======================================== */
+  .modal-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, rgba(208, 208, 208, 0.8) 100%);
+    border-bottom: 3px solid var(--secondary-color);
+    padding: 20px;
+  }
+
+  .modal-title {
+    color: var(--secondary-color) !important;
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+
+  .modal-content {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(143, 68, 68, 0.15);
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+
+  .modal-body .form-control {
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+
+  .modal-body .form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 8px rgba(143, 68, 68, 0.2);
+  }
+
+  .input-group-text {
+    background-color: white !important;
+    border: 2px solid var(--primary-color) !important;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: all 0.3s ease;
+  }
+
+  .input-group .form-control {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .input-group-text:hover {
+    background-color: var(--primary-color) !important;
+    color: var(--secondary-color);
+  }
+
+  .modal-body p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-top: 15px;
+  }
+
+  .modal-body p a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .modal-body p a:hover {
+    color: #6f3535;
+    text-decoration: underline;
+  }
+
+  .modal-footer {
+    border-top: 3px solid var(--primary-color);
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+
+  .modal-footer .btn-outline-secondary {
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 10px 30px;
+    border-radius: 8px;
+  }
+
+  .modal-footer .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #6f3535 100%);
+    border-color: #6f3535;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.3);
+  }
+
+  .btn-close {
+    filter: brightness(0.5);
+  }
+
+  /*** OFF CANVAS ***/
+  .offcanvas-header {
+    background: linear-gradient(180deg, var(--primary-color) 0%, rgba(208, 208, 208, 0.8) 100%);
+    border-bottom: 2px solid var(--secondary-color);
+    padding: 20px;
+  }
+
+  .offcanvas-title {
+    color: var(--secondary-color);
+    font-weight: 700;
+  }
+
+  .offcanvas-body a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 1rem;
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .offcanvas-body a:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding-left: 20px;
+  }
+
+  .offcanvas-body .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .offcanvas-body .dropdown-menu {
+    background-color: rgba(208, 208, 208, 0.2);
+    border: none;
+    border-left: 3px solid var(--secondary-color);
+  }
+
+  .offcanvas-body .dropdown-item {
+    color: var(--text-light);
+    padding-left: 30px;
+  }
+
+  .offcanvas-body .dropdown-item:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+  }
+
+  .offcanvas-body .dropdown-item:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding-left: 40px;
+  }
+
+  /* ===== ROOT COLORS ===== */
+  :root {
+    --primary-color: rgb(208, 208, 208);
+    --secondary-color: #8f4444;
+    --text-dark: #333;
+    --text-light: #666;
+  }
+
+  /* Navbar general */
+  .navbar {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Navbar Brand & Icon */
+  .navbar-brand {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+  }
+
+  .navbar-brand i {
+    color: var(--secondary-color);
+    margin-right: 8px;
+  }
+
+  /* Navbar Login Button */
+  .navbar .btn-light {
+    background-color: var(--secondary-color) !important;
+    color: #fff !important;
+    border: none;
+    padding: 8px 20px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+
+  .navbar .btn-light:hover {
+    background-color: #6f3535 !important;
+    color: #fff !important;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.4);
+  }
+
+  /* ===== CUSTOM GLOBAL DROPDOWN STYLES ===== */
+  select.form-select, select {
+    cursor: pointer;
+    background-color: #fff;
+    color: var(--text-dark);
+    border: 1px solid var(--primary-color);
+  }
+  
+  select.form-select:focus, select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 5px rgba(143, 68, 68, 0.4);
+  }
+
+  select option {
+    background-color: #ffffff;
+    color: var(--text-dark);
+    padding: 10px;
+    font-size: 15px;
+  }
+  
+  select option:checked, 
+  select option:hover,
+  select option:focus {
+    background-color: var(--secondary-color) !important;
+    color: #ffffff !important;
+  }
+
+  /* ===== NAVBAR RESPONSIVE ===== */
+  .user-auth-nav {
+    margin-left: 35% !important; 
+    position: relative; 
+    left: 25px;
+  }
+
+  @media (max-width: 992px) {
+    .searchbox {
+      margin-left: 10px;
+      width: 200px;
+    }
+    .user-auth-nav {
+      margin-left: auto !important;
+      left: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .searchbox {
+      width: 140px;
+    }
+    #searchtext {
+      width: 70%;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .navbar-brand {
+      font-size: 15px;
+    }
+    .searchbox {
+      width: 140px;
+      padding: 6px 10px;
+      margin-left: 0px;
+      margin-top: 8px;
+    }
+    .navbar .btn-light {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+    .user-auth-nav {
+      gap: 10px !important;
+      margin-top: 8px;
+    }
+  }
+</style>
+
+<body>
+
+  <!-- Navbar -->
+  <!-- site name & logo  ------------------------------------------------------------>
+  <nav class="navbar fixed-top" style="background-color:rgb(208, 208, 208);">
+    <div class="container-fluid flex-wrap flex-md-nowrap">
+      <a class="navbar-brand" href="/"><b><i class="fa-solid fa-people-roof"></i> <span class="navbar-brand-text">Local Worker Finder</span></b></a>
+
+      <!-- search bar------------------------------------------------------------------- -->
+      <form action="{% url 'search_worker' %}" method="GET" style="display: inline;">
+        <div class="searchbox">
+          <button type="submit" style="background: none; border: none; padding: 0;">
+            <i class="fa-solid fa-magnifying-glass" style="cursor: pointer;"></i>
+          </button>
+          <input type="text" name="query" id="searchtext" placeholder="Search Worker (e.g. Plumber)">
+        </div>
+      </form>
+
+
+      <!-- login button ----------------------------------------------------------->
+      <!-- <div>
+      <a class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Login</a>&nbsp;&nbsp;
+      
+    </div> -->
+
+      <div class="d-flex align-items-center gap-2 user-auth-nav">
+
+        {% if request.session.user_type %}
+
+        <span class="fw-semibold">
+          {{ request.session.name }}
+        </span>
+
+        {% if request.session.user_type == "worker" %}
+        <img src="{%static 'images/log2.png'%}" alt="" height="30px" width="30px" style="border-radius: 50%;">
+        {% else %}
+        <img src="{%static 'images/log.png'%}" alt="" height="30px" width="30px" style="border-radius: 50%;">
+        {% endif %}
+
+        {% else %}
+        <a class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Login
+        </a>
+        {% endif %}
+
+      </div>
+
+      <!--off canvas menu bar  ------------------------------------------------------------>
+      <i class="fa-solid fa-bars" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+        aria-controls="offcanvasRight"></i>
+
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasRightLabel">Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <a href="/navhome">Home</a>
+          <a href="/about_us">About us</a>
+
+          <!-- BEFORE LOGIN -->
+          {% if not request.session.user_type %}
+          <div class="dropdown">
+            <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">Register</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/user_reg">User</a></li>
+              <li><a class="dropdown-item" href="/worker_reg">Worker</a></li>
+            </ul>
+          </div>
+          <!-- AFTER LOGIN -->
+          {% else %}
+          <a href="/my_profile">My Profile</a>
+          <a href="/logout">Log Out</a>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- -----------login model---------------------------- -->
+  <form action="/login" method="POST">
+    {% csrf_token %}
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      {% if messages %}
+      {% for message in messages %}
+      <script>
+        alert("{{ message }}");
+      </script>
+      {% endfor %}
+      {% endif %}
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel" style="color:#752f2f;">Login</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Username" id="login-username" name="first_name">
+            </div>
+            <div class="mb-3">
+              <div class="input-group">
+                <input type="password" class="form-control" id="loginPasswordField" name="password"
+                  placeholder="Password">
+                <span class="input-group-text" onclick="togglePassword('loginPasswordField', 'loginEyeIcon')"
+                  style="cursor:pointer;">
+                  <i class="fa-solid fa-eye" id="loginEyeIcon"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-secondary" data-bs-dismiss="modal">Login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  {% block content %}
+
+  <!-- -----------------------CAROUSAL--------------- -->
+  <div class="slider" id="home">
+    <div class="slides active">
+      <img src="{%static 'images/slide6.jpg'%}">
+      <div class="caption">
+        <h3>Home Repair & Maintenance Workers</h3>
+        <p>Trusted home repair and maintenance with quality spare parts replacement</p>
+      </div>
+    </div>
+
+    <div class="slides">
+      <img src="{%static 'images/slide7.jpg'%}">
+      <div class="caption">
+        <h3>Construction & Building Workers</h3>
+        <p>Strong, reliable construction and building services delivered by skilled professionals</p>
+      </div>
+    </div>
+
+    <div class="slides">
+      <img src="{%static 'images/slide8.jpg'%}">
+      <div class="caption">
+        <h3>Installation & Fitting Workers</h3>
+        <p>Expert installation and fitting services ensuring safety, accuracy, and performance</p>
+      </div>
+    </div>
+
+    <div class="slides">
+      <img src="{%static 'images/slide9.jpg'%}">
+      <div class="caption">
+        <h3>Transport & Labor Workers</h3>
+        <p>Efficient transport and dependable labor support for smooth daily operations</p>
+      </div>
+    </div>
+
+    <div class="slides">
+      <img src="{%static 'images/slide10.jpg'%}">
+      <div class="caption">
+        <h3>Food & Event Support Workers</h3>
+        <p>Professional food service and event support for memorable occasions</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- -----------------------FIND  WORKER----------------------------- -->
+
+  <div class="find-worker">
+    <h3 class="heading">Find Workers</h3><br>
+
+
+    <div class="card-grid">
+
+      <a href="{% url 'category_page' 'Home Maintenance' %}" class="worker-card">
+        <img src="{%static 'images/maintenance.png'%}" alt="">
+        <p>Home Maintenance</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Construction Services' %}" class="worker-card">
+        <img src="{%static 'images/workerss.png'%}" alt="">
+        <p>Construction Services</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Cleaning Services' %}" class="worker-card">
+        <img src="{%static 'images/broom.png'%}" alt="">
+        <p>Cleaning Services</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Outdoor Services' %}" class="worker-card">
+        <img src="{%static 'images/hiking.png'%}" alt="">
+        <p>Outdoor Services</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Installation Services' %}" class="worker-card">
+        <img src="{%static 'images/easy-installation.png'%}" alt="">
+        <p>Installation Services</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Logistics & Labor' %}" class="worker-card">
+        <img src="{%static 'images/logistic.png'%}" alt="">
+        <p>Logistics & Labor</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Tailoring & Crafts' %}" class="worker-card">
+        <img src="{%static 'images/tailor.png'%}" alt="">
+        <p>Tailoring & Crafts</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Food & Event Support' %}" class="worker-card">
+        <img src="{%static 'images/nutrition-plan.png'%}" alt="">
+        <p>Food & Event Support</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Personal Care' %}" class="worker-card">
+        <img src="{%static 'images/palliative.png'%}" alt="">
+        <p>Personal Care</p>
+      </a>
+
+      <a href="{% url 'category_page' 'Rural Services' %}" class="worker-card">
+        <img src="{%static 'images/work.png'%}" alt="">
+        <p>Rural Services</p>
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- -------------------HOW IT WORKS---------------------------------------- -->
+
+  <section class="how-it-works">
+    <h3 class="heading">How it Works</h3>
+
+    <div class="steps">
+
+      <div class="step">
+        <img src="{%static 'images/globle.png'%}" alt="" height="150px" width="150px">
+        <h3>Visit the Website</h3>
+        <p>Open our platform and access <br> trusted local workers easily.</p>
+      </div>
+
+      <div class="arrow">➜</div>
+
+      <div class="step">
+        <img src="{%static 'images/user-avatar.png'%}" alt="" height="150px" width="130px">
+        <h3>Search Workers</h3>
+        <p>Select your location and worker category to find nearby services.</p>
+      </div>
+
+      <div class="arrow">➜</div>
+
+      <div class="step">
+        <img src="{%static 'images/worker_profile.png'%}" alt="" height="150px" width="130px">
+        <h3>View Worker Profile</h3>
+        <p>Check worker details, experience, <br> and contact information.</p>
+      </div>
+      <div class="arrow">➜</div>
+
+      <div class="step">
+        <img src="{%static 'images/check.png'%}" alt="" height="150px" width="130px">
+        <h3>Contact & Solve <br> Problem</h3>
+        <p>Contact the worker and <br> finish your work easily.</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ------------POPULAR WORKER CATEGORIES-------------------------------------- -->
+  <div class="popular-worker">
+    <section class="category-section">
+      <h3 class="heading">Popular Worker Categories</h3>
+
+      <div class="card-wrapper">
+
+        <div class="popular-worker-card">
+          <div class="card-icon">⚡</div>
+          <h3>Electrician</h3>
+          <p>Electrical repair services</p>
+          <a href="{% url 'worker_list' 'Home Maintenance' 'Electrician' %}" class="card-btn">View Workers</a>
+        </div>
+
+        <div class="popular-worker-card">
+          <div class="card-icon">🚰</div>
+          <h3>Plumber</h3>
+          <p>Pipe and water repairs</p>
+          <a href="{% url 'worker_list' 'Home Maintenance' 'Plumber' %}" class="card-btn">View Workers</a>
+        </div>
+
+        <div class="popular-worker-card">
+          <div class="card-icon">🪚</div>
+          <h3>Carpenter</h3>
+          <p>Furniture and wood work</p>
+          <a href="{% url 'worker_list' 'Construction Services' 'Carpenter' %}" class="card-btn">View Workers</a>
+        </div>
+
+        <div class="popular-worker-card">
+          <div class="card-icon">🎨</div>
+          <h3>Painter</h3>
+          <p>House painting services</p>
+          <a href="{% url 'worker_list' 'Construction Services' 'Painter' %}" class="card-btn">View Workers</a>
+        </div>
+
+        <div class="popular-worker-card">
+          <div class="card-icon">🚖</div>
+          <h3>Driver</h3>
+          <p>Professional Driving Services</p>
+          <a href="{% url 'worker_list' 'Logistics & Labor' 'Driver' %}" class="card-btn">View Workers</a>
+        </div>
+
+        <div class="popular-worker-card">
+          <div class="card-icon">🥻</div>
+          <h3>Tailor</h3>
+          <p>Tailoring & Stitching Services</p>
+          <a href="{% url 'worker_list' 'Tailoring & Crafts' 'Tailor' %}" class="card-btn">View Workers</a>
+        </div>
+
+        <div class="popular-worker-card">
+          <div class="card-icon">🍽️</div>
+          <h3>Cook</h3>
+          <p>Home Cooking Services</p>
+          <a href="{% url 'worker_list' 'Food & Event Support' 'Cook' %}" class="card-btn">View Workers</a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ---------Why Choose our platform  ---------------------- -->
+    <div class="choose-platform">
+      <h3 class="heading">Why Choose To Our Platform </h3>
+
+      <div class="accordion accordion-flush" id="accordionFlushExample">
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+              ✔️ Verified Workers
+            </button>
+          </h2>
+          <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All
+              workers are checked and approved by our team. You can hire safely and with confidence. <br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              Verified professionals ensure quality service.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+              📍 Local & Nearby Workers
+            </button>
+          </h2>
+          <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Find
+              workers available in your city or neighborhood. Saves time and makes hiring faster.
+              <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              Local workers reach your location quickly.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+              🔍 Easy Search
+            </button>
+          </h2>
+          <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Search
+              by category and location in seconds. Filter results to find the best workers.
+              <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              Quick and simple interface for everyone.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingFour">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+              📞 Quick Contact
+            </button>
+          </h2>
+          <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contact
+              workers directly from their profile. No middleman, no delays. Get your work done efficiently.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingFive">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+              💰 Free to Use
+            </button>
+          </h2>
+          <div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Our
+              platform is completely free for users. No hidden charges or subscription fees.
+              <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              Hire local workers without spending extra.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingSix">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix">
+              🛠 Multiple Service Categories
+            </button>
+          </h2>
+          <div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSeven"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Choose
+              workers from different categories like Driver, Tailor, Cook, Painter and more.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingSeven">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseSeven" aria-expanded="false" aria-controls="flush-collapseSeven">
+              🧑‍💼 Worker Profiles
+            </button>
+          </h2>
+          <div id="flush-collapseSeven" class="accordion-collapse collapse" aria-labelledby="flush-headingSeven"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Each
+              worker has a detailed profile with experience, skills and availability.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+  <!--------------TRUST AND SAFECTY---------------------------------------------------- -->
+  <div class="trust_safety">
+
+    <section class="safety-trust">
+      <h3 class="heading">Trust & Safety</h3>
+      <h6 class="subtitle">Your safety is our top priority</h6>
+
+      <div class="trust-container">
+        <div class="trust-box">
+          <span class="icon"><img src="{%static 'images/trust_card1.png'%}" alt="" height="50px" width="50px"></span>
+          <h4>Genuine Local Workers</h4>
+          <p>We connect you only with genuine and skilled local workers from your area. Skilled and trustworthy
+            professionals ensure quality service for all your needs.</p>
+        </div>
+
+        <div class="trust-box">
+          <span class="icon"><img src="{%static 'images/trust_card2.png'%}" alt="" height="50px" width="50px"></span>
+          <h4>Phone Number Privacy</h4>
+          <p>Your contact details are protected and shared only when required. We respect your privacy and never share
+            personal information without consent.</p>
+        </div>
+
+        <div class="trust-box">
+          <span class="icon"><img src="{%static 'images/trust_card3.png'%}" alt="" height="50px" width="50px"></span>
+          <h4>Admin Verified Profiles</h4>
+          <p>All worker profiles are verified by our admin for better safety and trust. Every profile is checked
+            carefully to ensure authenticity and reliability.</p>
+        </div>
+
+        <div class="trust-box">
+          <span class="icon"><img src="{%static 'images/trust_card4.png'%}" alt="" height="50px" width="50px"></span>
+          <h4>Secure Platform</h4>
+          <p>We ensure a secure and reliable platform for both users and workers. Enjoy a safe and protected experience
+            while hiring local workers for any task.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- ----------FAQ----------------------------------------------- -->
+
+  <section class="faq-section">
+    <div class="container">
+      <h3 class="text-center mb-2">Frequently Asked Questions</h3>
+
+      <div class="accordion accordion-flush" id="accordionFlushExample">
+
+        <!-- FAQ 1 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+              How do I find a worker?
+            </button>
+          </h2>
+          <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              You can find a worker by selecting your city or district from the navbar.
+              Browse categories like Cook, Driver, Tailor, Painter, and more.
+              Each profile shows experience, skills, and contact options.
+              Check ratings and reviews to hire safely and quickly.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+              Is registration required?
+            </button>
+          </h2>
+          <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              Yes, registration is required to contact workers.
+              It helps verify identity and keeps the platform secure.
+              Registered users can save favorite workers, track requests,
+              and communicate easily. Registration is quick and free.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+              Can I contact workers directly?
+            </button>
+          </h2>
+          <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              Yes, after registration and login, you can view worker contact details.
+              You may call or message them directly if available.
+              All workers are admin-verified to ensure trust and reliability.
+              Always confirm availability before scheduling work.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingFour">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+              Are the workers verified?
+            </button>
+          </h2>
+          <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour"
+            data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              Yes, all workers are verified by our admin before approval.
+              Verification ensures proper skills and genuine profiles.
+              This helps users hire safely without fake or unreliable services.
+              You can review profiles and ratings before hiring.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ----SERVICE OVERVIEW----------------------------------------- -->
+  <div class="service_overview">
+
+    <section class="quick-stats">
+      <h3 class="heading">Service Overview</h3>
+
+      <div class="stats-container">
+
+        <div class="stat-box">
+          <h3>100+</h3>
+          <p>Local Workers</p>
+          <p>Skilled and trusted local professionals
+            ready to serve your daily needs.</p>
+        </div>
+
+        <div class="stat-box">
+          <h3>10+</h3>
+          <p>Service Categories</p>
+          <p>Multiple services under one platform
+            for home and personal requirements.</p>
+        </div>
+
+        <div class="stat-box">
+          <h3>15+</h3>
+          <p>Cities Covered</p>
+          <p>services available across
+            multiple districts near you.</p>
+        </div>
+
+        <div class="stat-box">
+          <h3>200+</h3>
+          <p>Happy Customers</p>
+          <p>Satisfied customers who trust
+            our quality and timely service.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- ----------FOOTER------------------------------------------------------------------ -->
+  <footer class="site-footer" id="footer">
+    <div class="footer-container" href="/footer">
+
+      <!-- About Us -->
+      <div class="footer-column">
+        <h4>About Us</h4>
+        <p>
+          We connect skilled local workers with customers <br> in nearby areas.
+          Our platform makes hiring trusted professionals simple, fast,
+          and reliable for <br> everyday services.
+        </p>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="footer-column">
+        <h4>Contact Info</h4>
+        <ul>
+          <li>Email: support@Local Worker Finder.com</li>
+          <li>Phone: +91 98765 43210</li>
+          <li>Working Hours: 24/7</li>
+          <li>Service Areas: Multiple Districts</li>
+        </ul>
+      </div>
+
+      <!-- Policies -->
+      <div class="footer-column">
+        <h4>Our Policies</h4>
+        <ul>
+          <li><a href="/about_us">Privacy Policy</a></li>
+          <li><a href="/about_us">Terms & Conditions</a></li>
+          <li><a href="/about_us">Cancellation Policy</a></li>
+          <li><a href="/about_us">Refund Policy</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="footer-bottom">
+      <p>© 2026 Local Worker Finder. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  {% endblock %}
+
+</body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    const slides = document.querySelectorAll(".slides");
+
+    if (slides.length === 0) return;
+
+    let slideIndex = 0;
+
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.remove("active"));
+      slides[index].classList.add("active");
+    }
+
+    function nextSlide() {
+      slideIndex++;
+      if (slideIndex >= slides.length) {
+        slideIndex = 0;
+      }
+      showSlide(slideIndex);
+    }
+
+    setInterval(nextSlide, 3000);
+  });
+
+  function togglePassword(fieldId, iconId) {
+    var password = document.getElementById(fieldId);
+    var icon = document.getElementById(iconId);
+
+    if (password.type === "password") {
+      password.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      password.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
+</script>
+
+</html>

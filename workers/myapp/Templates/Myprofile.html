@@ -1,0 +1,934 @@
+{% extends "home.html" %}
+{% load static %}
+{% block title %}{{ person.first_name }}'s Profile{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/myprofile.css' %}">
+<style>
+    body {
+        background: #f4f4f4;
+    }
+    .profile-container {
+        margin-top: 70px !important;
+        margin-bottom: 50px !important;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .sidebar {
+        background-color: rgb(208, 208, 208);
+        min-height: 80vh;
+        border-right: 1px solid #ddd;
+    }
+    .content-area {
+        min-height: 80vh;
+        padding: 40px;
+    }
+    @media (max-width: 768px) {
+        .profile-container {
+            margin-top: 70px !important;
+        }
+        .sidebar {
+            min-height: auto;
+            border-right: none;
+            border-bottom: 1px solid #ddd;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container profile-container p-0">
+<div class="row g-0 flex-wrap flex-md-nowrap">
+
+<!-- Sidebar -->
+<div class="col-md-3 sidebar d-flex flex-column">
+    <h4><a href="/"><img src="{%static 'images/left-arrow.png'%}" alt="" width="20px" height="20px"></a>
+    Settings</h4>
+    <ul class="nav flex-column nav-pills" id="profileTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#profile">
+            <i class="fa-solid fa-user"></i> My Profile
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#orders">
+            <i class="fa-solid fa-box"></i> My Orders
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#newworks">
+            <i class="fa-solid fa-briefcase"></i> New Works
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#status">
+            <i class="fa-solid fa-chart-line"></i> Work Status
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#feedback">
+            <i class="fa-solid fa-paper-plane"></i> Feedback
+            </button>
+        </li>
+
+    </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="col-md-9 content-area">
+        <div class="tab-content">
+
+    <!-- My Profile -->
+    <div class="tab-pane fade show active" id="profile">
+        <form method="POST">
+            {% csrf_token %}
+            <h3>My Profile</h3>
+
+    <!-- <div class="profile-pic-container">
+        <div class="profile-pic">
+            <img src="" alt="Profile">
+        </div>
+        <div>
+            <button class="upload-btn mb-2"><i class="bi bi-cloud-upload me-2"></i>Upload new picture</button>
+        <div>
+            <button class="remove-btn">Remove picture</button>
+        </div>
+        </div>
+        </div> -->
+
+<div class="info-list mb-4">
+    <div class="info-row">
+        <div class="label">Full Name</div>
+        <div class="value d-flex gap-2">
+            <input type="text" name="first_name" class="form-control" value="{{ person.first_name }}" disabled>
+            <input type="text" name="last_name" class="form-control" value="{{ person.last_name }}" disabled>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="label">Email</div>
+        <div class="value"><input type="email" name="email" value="{{ person.email }}"
+                class="form-control" disabled></div>
+    </div>
+    <div class="info-row">
+        <div class="label">Phone</div>
+        <div class="value"><input type="text" name="phone" value="{{ person.phone }}"
+                class="form-control" disabled></div>
+    </div>
+
+    {% if request.session.user_type == "worker" %}
+    <div class="info-row">
+        <div class="label">Date of Birth</div>
+        <div class="value"><input type="date" name="dob"
+                value="{{ person.dob|date:'Y-m-d' }}" class="form-control" disabled></div>
+    </div>
+    <div class="info-row">
+        <div class="label">Gender</div>
+        <div class="value">
+            <select name="gender" class="form-control" disabled>
+                <option value="Male" {% if person.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if person.gender == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if person.gender == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="label">Worker Type</div>
+        <div class="value">
+            <select name="worker_type" id="worker_type" class="form-control" onchange="setCategory()" disabled>
+                <option value="" selected disabled>Select Worker type *</option>
+
+                <!-- Home Repair & Maintenance Workers -->
+                <option value="Plumber" {% if person.worker_type == 'Plumber' %}selected{% endif %}>Plumber</option>
+                <option value="Electrician" {% if person.worker_type == 'Electrician' %}selected{% endif %}>Electrician</option>
+                <option value="Mechanic_2_4_wheeler" {% if person.worker_type == 'Mechanic_2_4_wheeler' %}selected{% endif %}>Mechanic (2-wheeler / 4-wheeler)</option>
+                <option value="AC_Technician" {% if person.worker_type == 'AC_Technician' %}selected{% endif %}>AC Technician</option>
+                <option value="Refrigerator_Technician" {% if person.worker_type == 'Refrigerator_Technician' %}selected{% endif %}>Refrigerator Technician</option>
+                <option value="Washing_Machine_Repair" {% if person.worker_type == 'Washing_Machine_Repair' %}selected{% endif %}>Washing Machine Repair</option>
+                <option value="TV_Electronics_Repair" {% if person.worker_type == 'TV_Electronics_Repair' %}selected{% endif %}>TV / Electronics Repair</option>
+                <option value="Inverter_Technician" {% if person.worker_type == 'Inverter_Technician' %}selected{% endif %}>Inverter Technician</option>
+                <option value="RO_Water_Purifier_Technician" {% if person.worker_type == 'RO_Water_Purifier_Technician' %}selected{% endif %}>RO Water Purifier Technician</option>
+                <option value="Gas Stove Technician" {% if person.worker_type == 'Gas Stove Technician' %}selected{% endif %}>Gas Stove Technician</option>
+                <option value="Chimney / Hob Technician" {% if person.worker_type == 'Chimney / Hob Technician' %}selected{% endif %}>Chimney / Hob Technician</option>
+                <option value="Water Motor Technician" {% if person.worker_type == 'Water Motor Technician' %}selected{% endif %}>Water Motor Technician</option>
+                <option value="UPS / Battery Technician" {% if person.worker_type == 'UPS / Battery Technician' %}selected{% endif %}> UPS / Battery Technician</option>
+
+                <!-- Construction & Building Workers -->
+                <option value="Mason" {% if person.worker_type == 'Mason' %}selected{% endif %}>Mason</option>
+                <option value="Carpenter" {% if person.worker_type == 'Carpenter' %}selected{% endif %}>Carpenter</option>
+                <option value="Painter" {% if person.worker_type == 'Painter' %}selected{% endif %}>Painter</option>
+                <option value="Tile_Worker" {% if person.worker_type == 'Tile_Worker' %}selected{% endif %}>Tile Worker</option>
+                <option value="Marble_Granite_Worker" {% if person.worker_type == 'Marble_Granite_Worker' %}selected{% endif %}>Marble / Granite Worker</option>
+                <option value="Plaster_Worker" {% if person.worker_type == 'Plaster_Worker' %}selected{% endif %}>Plaster Worker</option>
+                <option value="Welder" {% if person.worker_type == 'Welder' %}selected{% endif %}>Welder</option>
+                <option value="Fabricator" {% if person.worker_type == 'Fabricator' %}selected{% endif %}>Fabricator</option>
+                <option value="Steel_Fixer" {% if person.worker_type == 'Steel_Fixer' %}selected{% endif %}>Steel Fixer</option>
+                <option value="Concrete Mixer Operator" {% if person.worker_type == 'Concrete Mixer Operator' %}selected{% endif %}>Concrete Mixer Operator</option>
+                <option value="Demolition Worker" {% if person.worker_type == 'Demolition Worker' %}selected{% endif %}>Demolition Worker</option>
+                <option value="False Ceiling Worker" {% if person.worker_type == 'False Ceiling Worker' %}selected{% endif %}>False Ceiling Worker</option>
+
+                <!-- Cleaning & Domestic Workers -->
+                <option value="House_Cleaner" {% if person.worker_type == 'House_Cleaner' %}selected{% endif %}>House Cleaner</option>
+                <option value="Office_Cleaner" {% if person.worker_type == 'Office_Cleaner' %}selected{% endif %}>Office Cleaner</option>
+                <option value="Sweeper" {% if person.worker_type == 'Sweeper' %}selected{% endif %}>Sweeper</option>
+                <option value="Garbage_Collector" {% if person.worker_type == 'Garbage_Collector' %}selected{% endif %}>Garbage Collector</option>
+                <option value="Septic_Tank_Cleaner" {% if person.worker_type == 'Septic_Tank_Cleaner' %}selected{% endif %}>Septic Tank Cleaner</option>
+                <option value="Drainage_Cleaner" {% if person.worker_type == 'Drainage_Cleaner' %}selected{% endif %}>Drainage Cleaner</option>
+                <option value="Bathroom Deep Cleaner" {% if person.worker_type == 'Bathroom Deep Cleaner' %}selected{% endif %}> Bathroom Deep Cleaner</option>
+
+                <!-- Outdoor & Utility Workers -->
+                <option value="Gardener" {% if person.worker_type == 'Gardener' %}selected{% endif %}>Gardener</option>
+                <option value="Borewell_Worker" {% if person.worker_type == 'Borewell_Worker' %}selected{% endif %}>Borewell Worker</option>
+                <option value="Water_Tank_Cleaner" {% if person.worker_type == 'Water_Tank_Cleaner' %}selected{% endif %}>Water Tank Cleaner</option>
+                <option value="Pest_Control_Worker" {% if person.worker_type == 'Pest_Control_Worker' %}selected{% endif %}>Pest Control Worker</option>
+                <option value="Tree_Cutter" {% if person.worker_type == 'Tree_Cutter' %}selected{% endif %}>Tree Cutter</option>
+                <option value="Drainage Maintenance Worker" {% if person.worker_type == 'Drainage Maintenance Worker' %}selected{% endif %}> Drainage Maintenance Worker</option>
+                <option value="Roadside Cleaner" {% if person.service_area == 'Roadside Cleaner' %}selected{% endif %}>Roadside Cleaner</option>
+                <option value="Rainwater Harvesting Worker" {% if person.worker_type == 'Rainwater Harvesting Worker' %}selected{% endif %}> Rainwater Harvesting Worker</option>
+
+                <!-- Installation & Fitting Workers -->
+                <option value="CCTV_Installer" {% if person.worker_type == 'CCTV_Installer' %}selected{% endif %}>CCTV Installer</option>
+                <option value="Solar_Panel_Installer" {% if person.worker_type == 'Solar_Panel_Installer' %}selected{% endif %}>Solar Panel Installer</option>
+                <option value="Network_Cable_Technician" {% if person.worker_type == 'Network_Cable_Technician' %}selected{% endif %}>Network Cable Technician</option>
+                <option value="Door_Window_Fitter" {% if person.worker_type == 'Door_Window_Fitter' %}selected{% endif %}>Door / Window Fitter</option>
+                <option value="Modular_Kitchen_Installer" {% if person.worker_type == 'Modular_Kitchen_Installer' %}selected{% endif %}>Modular Kitchen Installer</option>
+                <option value="Wallpaper_Installer" {% if person.worker_type == 'Wallpaper_Installer' %}selected{% endif %}>Wallpaper Installer</option>
+                <option value="LED_Light_Installer" {% if person.worker_type == 'LED_Light_Installer' %}selected{% endif %}>LED Light Installer</option>
+                <option value="Smart_Lock_Installer" {% if person.worker_type == 'Smart_Lock_Installer' %}selected{% endif %}>Smart Lock Installer</option>
+                <option value="Water_Heater_Installer" {% if person.worker_type == 'Water_Heater_Installer' %}selected{% endif %}>Water Heater Installer</option>
+
+                <!-- Transport & Labor Workers -->
+                <option value="Driver" {% if person.worker_type == 'Driver' %}selected{% endif %}>Driver</option>
+                <option value="Loader_Unloader" {% if person.worker_type == 'Loader_Unloader' %}selected{% endif %}>Loader / Unloader</option>
+                <option value="Daily_Wage_Laborer" {% if person.worker_type == 'Daily_Wage_Laborer' %}selected{% endif %}>Daily Wage Laborer</option>
+                <option value="Packers_Movers_Helper" {% if person.worker_type == 'Packers_Movers_Helper' %}selected{% endif %}>Packers & Movers Helper</option>
+
+                <!-- Tailoring & Small Skill Workers -->
+                <option value="Tailor" {% if person.worker_type == 'Tailor' %}selected{% endif %}>Tailor</option>
+                <option value="Embroidery Worker" {% if person.worker_type == 'Embroidery Worker' %}selected{% endif %}>Embroidery Worker</option>
+                <option value="Cobbler" {% if person.worker_type == 'Cobbler' %}selected{% endif %}>Cobbler</option>
+                <option value="Watch_Repair" {% if person.worker_type == 'Watch_Repair' %}selected{% endif %}>Watch Repair</option>
+                <option value="Mobile_Repair_Technician" {% if person.worker_type == 'Mobile_Repair_Technician' %}selected{% endif %}>Mobile Repair Technician</option>
+                <option value="Lock_Repair_Key_Maker" {% if person.worker_type == 'Lock_Repair_Key_Maker' %}selected{% endif %}>Lock Repair (Key Maker)</option>
+
+                <!-- Food & Event Support Workers -->
+                <option value="Cook" {% if person.worker_type == 'Cook' %}selected{% endif %}>Cook</option>
+                <option value="Tea_Master" {% if person.worker_type == 'Tea_Master' %}selected{% endif %}>Tea Master</option>
+                <option value="Juice_Maker" {% if person.worker_type == 'Juice_Maker' %}selected{% endif %}>Juice Maker</option>
+                <option value="Fast_Food_Helper" {% if person.worker_type == 'Fast_Food_Helper' %}selected{% endif %}>Fast Food Helper</option>
+                <option value="Dish_Washer" {% if person.worker_type == 'Dish_Washer' %}selected{% endif %}>Dish Washer</option>
+                <option value="Catering_Helper" {% if person.worker_type == 'Catering_Helper' %}selected{% endif %}>Catering Helper</option>
+                <option value="Server_Waiter" {% if person.worker_type == 'Server_Waiter' %}selected{% endif %}>Server / Waiter</option>
+                <option value="Event_Setup_Worker" {% if person.worker_type == 'Event_Setup_Worker' %}selected{% endif %}>Event Setup Worker</option>
+                <option value="Tent_House_Worker" {% if person.worker_type == 'Tent_House_Worker' %}selected{% endif %}>Tent House Worker</option>
+
+                <!-- Care & Personal Support -->
+                <option value="Babysitter" {% if person.worker_type == 'Babysitter' %}selected{% endif %}>Babysitter</option>
+                <option value="Elder_Care_Worker" {% if person.worker_type == 'Elder_Care_Worker' %}selected{% endif %}>Elder Care Worker</option>
+                <option value="Patient_Care_Assistant" {% if person.worker_type == 'Patient_Care_Assistant' %}selected{% endif %}>Patient Care Assistant</option>
+                <option value="Home_Nurse_Assistant" {% if person.worker_type == 'Home_Nurse_Assistant' %}selected{% endif %}>Home Nurse Assistant</option>
+                <option value="Patient_Transport_Helper" {% if person.worker_type == 'Patient_Transport_Helper' %}selected{% endif %}>Patient Transport Helper</option>
+
+                <!-- Rural / Traditional Workers -->
+                <option value="Milkman" {% if person.worker_type == 'Milkman' %}selected{% endif %}>Milkman</option>
+                <option value="Fisherman" {% if person.worker_type == 'Fisherman' %}selected{% endif %}>Fisherman</option>
+                <option value="Farm_Laborer" {% if person.worker_type == 'Farm_Laborer' %}selected{% endif %}>Farm Laborer</option>
+                <option value="Tractor_Driver" {% if person.worker_type == 'Tractor_Driver' %}selected{% endif %}>Tractor Driver</option>
+                <option value="Poultry_Worker" {% if person.worker_type == 'Poultry_Worker' %}selected{% endif %}>Poultry Worker</option>
+                <option value="Well_Cleaner" {% if person.worker_type == 'Well_Cleaner' %}selected{% endif %}>Well Cleaner</option>
+                <option value="Irrigation_Helper" {% if person.worker_type == 'Irrigation_Helper' %}selected{% endif %}>Irrigation Helper</option>
+                <option value="Seed_Plantation_Worker" {% if person.worker_type == 'Seed_Plantation_Worker' %}selected{% endif %}>Seed Plantation Worker</option>
+                <option value="Organic_Farming_Helper" {% if person.worker_type == 'Organic_Farming_Helper' %}selected{% endif %}>Organic Farming Helper</option>
+            </select>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="label">Category</div>
+        <div class="value">
+            <select name="category" id="category" class="form-control" disabled>
+                <option value="Home Maintenance" {% if person.category == 'Home Maintenance' %}selected{% endif %}>Home Maintenance</option>
+                <option value="Construction Services" {% if person.category == 'Construction Services' %}selected{% endif %}>Construction Services</option>
+                <option value="Cleaning Services" {% if person.category == 'Cleaning Services' %}selected{% endif %}>Cleaning Services</option>
+                <option value="Outdoor Services" {% if person.category == 'Outdoor Services' %}selected{% endif %}>Outdoor Services</option>
+                <option value="Installation Services" {% if person.category == 'Installation Services' %}selected{% endif %}>Installation Services</option>
+                <option value="Logistics & Labor" {% if person.category == 'Logistics & Labor' %}selected{% endif %}>Logistics & Labor</option>
+                <option value="Tailoring & Crafts" {% if person.category == 'Tailoring & Crafts' %}selected{% endif %}>Tailoring & Crafts</option>
+                <option value="Food & Event Support" {% if person.category == 'Food & Event Support' %}selected{% endif %}>Food & Event Support</option>
+                <option value="Personal Care" {% if person.category == 'Personal Care' %}selected{% endif %}>Personal Care</option>
+                <option value="Rural Services" {% if person.category == 'Rural Services' %}selected{% endif %}>Rural Services</option>
+            </select>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="label">Experience</div>
+        <div class="value"><input type="text" name="experience" value="{{ person.experience }}" class="form-control" disabled></div>
+    </div>
+    <div class="info-row">
+        <div class="label">Service Area</div>
+        <div class="value">
+            <select name="service_area" class="form-control" disabled>
+                <option value="" disabled>Service Area *</option>
+                <!-- Erode District -->
+                <option value="Erode" {% if person.service_area == 'Erode' %}selected{% endif %}>Erode</option>
+                <option value="Gobichettipalayam" {% if person.service_area == 'Gobichettipalayam' %}selected{% endif %}>Gobichettipalayam (Gobi)</option>
+                <option value="Perundurai" {% if person.service_area == 'Perundurai' %}selected{% endif %}>Perundurai</option>
+                <option value="Sathyamangalam" {% if person.service_area == 'Sathyamangalam' %}selected{% endif %}>Sathyamangalam</option>
+                <option value="Bhavani" {% if person.service_area == 'Bhavani' %}selected{% endif %}>Bhavani</option>
+                <option value="Anthiyur" {% if person.service_area == 'Anthiyur' %}selected{% endif %}>Anthiyur</option>
+                <!-- Tiruppur District -->
+                <option value="Tiruppur" {% if person.service_area == 'Tiruppur' %}selected{% endif %}>Tiruppur</option>
+                <option value="Dharapuram" {% if person.service_area == 'Dharapuram' %}selected{% endif %}>Dharapuram</option>
+                <option value="Udumalaipettai" {% if person.service_area == 'Udumalaipettai' %}selected{% endif %}>Udumalaipettai</option>
+                <option value="Avinashi" {% if person.service_area == 'Avinashi' %}selected{% endif %}>Avinashi</option>
+                <option value="Palladam" {% if person.service_area == 'Palladam' %}selected{% endif %}>Palladam</option>
+                <option value="Kangeyam" {% if person.service_area == 'Kangeyam' %}selected{% endif %}>Kangeyam</option>
+                <!-- Coimbatore District -->
+                <option value="Coimbatore" {% if person.service_area == 'Coimbatore' %}selected{% endif %}>Coimbatore</option>
+                <option value="Pollachi" {% if person.service_area == 'Pollachi' %}selected{% endif %}>Pollachi</option>
+                <option value="Mettupalayam" {% if person.service_area == 'Mettupalayam' %}selected{% endif %}>Mettupalayam</option>
+                <option value="Valparai" {% if person.service_area == 'Valparai' %}selected{% endif %}>Valparai</option>
+                <option value="Sulur" {% if person.service_area == 'Sulur' %}selected{% endif %}>Sulur</option>
+                <option value="Kinathukadavu" {% if person.service_area == 'Kinathukadavu' %}selected{% endif %}>Kinathukadavu</option>
+                <!-- Karur District -->
+                <option value="Karur" {% if person.service_area == 'Karur' %}selected{% endif %}>Karur</option>
+                <option value="Kulithalai" {% if person.service_area == 'Kulithalai' %}selected{% endif %}>Kulithalai</option>
+                <option value="Aravakurichi" {% if person.service_area == 'Aravakurichi' %}selected{% endif %}>Aravakurichi</option>
+                <option value="Krishnarayapuram" {% if person.service_area == 'Krishnarayapuram' %}selected{% endif %}>Krishnarayapuram</option>
+                <option value="Pugalur" {% if person.service_area == 'Pugalur' %}selected{% endif %}>Pugalur</option>
+            </select>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="info-row">
+        <div class="label">State</div>
+        <div class="value">
+            <select name="state" class="form-control" disabled>
+                <option value="Tamil Nadu" {% if person.state == 'Tamil Nadu' %}selected{% endif %}>Tamil Nadu</option>
+                <option value="Others" {% if person.state == 'Others' %}selected{% endif %}>Others</option>
+            </select>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="label">District</div>
+        <div class="value">
+            <select name="district" class="form-control" disabled>
+                <option value="Erode" {% if person.district == 'Erode' %}selected{% endif %}>Erode</option>
+                <option value="Coimbatore" {% if person.district == 'Coimbatore' %}selected{% endif %}>Coimbatore</option>
+                <option value="Tiruppur" {% if person.district == 'Tiruppur' %}selected{% endif %}>Tiruppur</option>
+                <option value="Karur" {% if person.district == 'Karur' %}selected{% endif %}>Karur</option>
+                <option value="Others" {% if person.district == 'Others' %}selected{% endif %}>Others</option>
+            </select>
+        </div>
+    </div>
+    <div class="info-row">
+        <div class="label">City</div>
+        <div class="value">
+            <select name="city" class="form-control" disabled>
+                <option value="" disabled>Select City *</option>
+                <!-- Erode District -->
+                <option value="Erode" {% if person.city == 'Erode' %}selected{% endif %}>Erode</option>
+                <option value="Gobichettipalayam" {% if person.city == 'Gobichettipalayam' %}selected{% endif %}>Gobichettipalayam (Gobi)</option>
+                <option value="Perundurai" {% if person.city == 'Perundurai' %}selected{% endif %}>Perundurai</option>
+                <option value="Sathyamangalam" {% if person.city == 'Sathyamangalam' %}selected{% endif %}>Sathyamangalam</option>
+                <option value="Bhavani" {% if person.city == 'Bhavani' %}selected{% endif %}>Bhavani</option>
+                <option value="Anthiyur" {% if person.city == 'Anthiyur' %}selected{% endif %}>Anthiyur</option>
+                <!-- Tiruppur District -->
+                <option value="Tiruppur" {% if person.city == 'Tiruppur' %}selected{% endif %}>Tiruppur</option>
+                <option value="Dharapuram" {% if person.city == 'Dharapuram' %}selected{% endif %}>Dharapuram</option>
+                <option value="Udumalaipettai" {% if person.city == 'Udumalaipettai' %}selected{% endif %}>Udumalaipettai</option>
+                <option value="Avinashi" {% if person.city == 'Avinashi' %}selected{% endif %}>Avinashi</option>
+                <option value="Palladam" {% if person.city == 'Palladam' %}selected{% endif %}>Palladam</option>
+                <option value="Kangeyam" {% if person.city == 'Kangeyam' %}selected{% endif %}>Kangeyam</option>
+                <!-- Coimbatore District -->
+                <option value="Coimbatore" {% if person.city == 'Coimbatore' %}selected{% endif %}>Coimbatore</option>
+                <option value="Pollachi" {% if person.city == 'Pollachi' %}selected{% endif %}>Pollachi</option>
+                <option value="Mettupalayam" {% if person.city == 'Mettupalayam' %}selected{% endif %}>Mettupalayam</option>
+                <option value="Valparai" {% if person.city == 'Valparai' %}selected{% endif %}>Valparai</option>
+                <option value="Sulur" {% if person.city == 'Sulur' %}selected{% endif %}>Sulur</option>
+                <option value="Kinathukadavu" {% if person.city == 'Kinathukadavu' %}selected{% endif %}>Kinathukadavu</option>
+                <!-- Karur District -->
+                <option value="Karur" {% if person.city == 'Karur' %}selected{% endif %}>Karur</option>
+                <option value="Kulithalai" {% if person.city == 'Kulithalai' %}selected{% endif %}>Kulithalai</option>
+                <option value="Aravakurichi" {% if person.city == 'Aravakurichi' %}selected{% endif %}>Aravakurichi</option>
+                <option value="Krishnarayapuram" {% if person.city == 'Krishnarayapuram' %}selected{% endif %}>Krishnarayapuram</option>
+                <option value="Pugalur" {% if person.city == 'Pugalur' %}selected{% endif %}>Pugalur</option>
+                <option value="Others" {% if person.city == 'Others' %}selected{% endif %}>Others</option>
+            </select>
+        </div>
+    </div>
+
+    {% if request.session.user_type != "worker" %}
+    <div class="info-row">
+        <div class="label">Full Address</div>
+        <div class="value"><input type="text" name="full_address"
+                value="{{ person.full_address }}" class="form-control" disabled></div>
+    </div>
+    <div class="info-row">
+        <div class="label">Land Mark</div>
+        <div class="value"><input type="text" name="landmark" value="{{ person.landmark }}"
+                class="form-control" disabled></div>
+    </div>
+    {% endif %}
+
+    <div class="info-row">
+        <div class="label">Pincode</div>
+        <div class="value"><input type="text" name="pincode" value="{{ person.pincode }}"
+                class="form-control" disabled></div>
+    </div>
+
+    </div>
+
+    <div class="text-end">
+        <button class="btn btn-edit" id="editBtn"><i class="bi bi-pencil-square me-2"></i>Edit
+            Profile</button>
+        <button id="saveBtn" type="submit" class="btn btn-dark d-none">Save Changes</button>
+    </div>
+    </form>
+</div>
+
+<!-- My Orders -->
+<div class="tab-pane fade" id="orders">
+    <h3>My Orders / Bookings</h3>
+
+{% if bookings %}
+<div class="table-responsive">
+<table class="table table-hover"
+    style="background: white; border-radius: 8px; overflow: hidden; min-width: 600px;">
+    <thead style="background-color: rgb(208, 208, 208); color: #333; font-weight: 600;">
+        <tr>
+            <th>Booking ID</th>
+            {% if request.session.user_type == "worker" %}
+                <th>User Name</th>
+                <th>User Phone</th>
+                <th>User City</th>
+            {% else %}
+                <th>Worker Name</th>
+                <th>Worker Phone</th>
+                <th>Worker City</th>
+            {% endif %}
+            <th>Service Type</th>
+            <th>Booking Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td><strong>{{ booking.id }}</strong></td>
+            {% if request.session.user_type == "worker" %}
+                <td>{{ booking.user.first_name }} {{ booking.user.last_name }}</td>
+                <td>{{ booking.user.phone }}</td>
+                <td>{{ booking.user.city }}</td>
+            {% else %}
+                <td>{{ booking.worker.first_name }} {{ booking.worker.last_name }}</td>
+                <td>{{ booking.worker.phone }}</td>
+                <td>{{ booking.worker.city }}</td>
+            {% endif %}
+            <td>{{ booking.service_type }}</td>
+            <td>{{ booking.booking_date|date:"d-m-Y" }}</td>
+            <td>
+                {% if booking.status == 'pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                {% elif booking.status == 'requested' %}
+                    <span class="badge bg-info text-dark">Requested</span>
+                {% elif booking.status == 'accepted' %}
+                    <span class="badge bg-success">Accepted</span>
+                {% elif booking.status == 'rejected' %}
+                    <span class="badge bg-danger">Rejected</span>
+                {% elif booking.status == 'not_available' %}
+                    <span class="badge bg-secondary">Not Available</span>
+                {% elif booking.status == 'confirmed' %}
+                    <span class="badge bg-primary">Confirmed</span>
+                {% elif booking.status == 'started' %}
+                    <span class="badge bg-info">Work Started</span>
+                {% elif booking.status == 'in_progress' %}
+                    <span class="badge bg-warning text-dark">In Progress</span>
+                {% elif booking.status == 'almost_done' %}
+                    <span class="badge bg-info">Almost Done</span>
+                {% elif booking.status == 'completed' %}
+                    <span class="badge bg-success">Completed</span>
+                {% elif booking.status == 'cancelled' %}
+                    <span class="badge bg-dark">Cancelled</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fa-solid fa-info-circle"></i> No bookings found.
+</div>
+{% endif %}
+</div>
+
+<!-- New Works -->
+<div class="tab-pane fade" id="newworks">
+    <h3>New Work Requests </h3>
+
+{% if bookings %}
+<div style="display: grid; gap: 15px;">
+    {% for booking in bookings %}
+
+    <!-- WORKER SIDE: Pending requests to accept/reject -->
+    {% if request.session.user_type == 'worker' and booking.status == 'requested' %}
+    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #8f4444; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+            <div style="flex: 1; width: 100%;">
+                <h5 style="color: #333; font-weight: 600; margin-bottom: 10px;">
+                    <i class="fa-solid fa-briefcase"></i> {{ booking.service_type }}
+                </h5>
+                <p style="color: #666; margin: 8px 0;"><strong>User:</strong> {{ booking.user.first_name }} {{ booking.user.last_name }}</p>
+                <p style="color: #666; margin: 8px 0;"><strong>Phone:</strong> {{ booking.user.phone }}</p>
+                <p style="color: #666; margin: 8px 0;"><strong>Work Description:</strong> {{ booking.description }}</p>
+                <p style="color: #666; margin: 8px 0;"><strong>Requested On:</strong> {{ booking.booking_date|date:"d-m-Y H:i" }}</p>
+            </div>
+            <div class="mt-3 mt-md-0 w-100" style="display: flex; flex-direction: column; gap: 10px; min-width: 140px; max-width: 250px;">
+                <form method="POST" action="{% url 'accept_work' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn w-100" style="background-color: #28a745; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600;">
+                        <i class="fa-solid fa-check"></i> Accept
+                    </button>
+                </form>
+                <form method="POST" action="{% url 'reject_work' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn w-100" style="background-color: #dc3545; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: 600;">
+                        <i class="fa-solid fa-times"></i> Reject
+                    </button>
+                </form>
+                <form method="POST" action="{% url 'not_available_work' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn w-100" style="background-color: #ffc107; color: #333; border: none; padding: 8px; border-radius: 6px; font-weight: 600;">
+                        <i class="fa-solid fa-ban"></i> Not Available
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER SIDE: See status of their requests -->
+    {% elif request.session.user_type == 'user' %}
+    {% if booking.status == 'requested' or booking.status == 'accepted' or booking.status == 'rejected' or booking.status == 'not_available' %}
+    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #8f4444; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 15px;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+            <div style="flex: 1; width: 100%;">
+                <h5 style="color: #333; font-weight: 600; margin-bottom: 10px;">
+                    <i class="fa-solid fa-briefcase"></i> Work Request to {{ booking.worker.first_name }}
+                </h5>
+                <p style="color: #666; margin: 8px 0;"><strong>Service:</strong> {{ booking.service_type }}</p>
+                <p style="color: #666; margin: 8px 0;"><strong>Description:</strong> {{ booking.description }}</p>
+                <p style="color: #666; margin: 8px 0;"><strong>Requested On:</strong> {{ booking.booking_date|date:"d-m-Y H:i" }}</p>
+                <p style="color: #666; margin: 8px 0;">
+                    <strong>Status:</strong>
+                    {% if booking.status == 'requested' %}
+                        <span class="badge bg-warning text-dark">Pending Worker Decision</span>
+                    {% elif booking.status == 'accepted' %}
+                        <span class="badge bg-success">Worker Accepted! ✓</span>
+                    {% elif booking.status == 'rejected' %}
+                        <span class="badge bg-danger">Worker Rejected ✗</span>
+                    {% elif booking.status == 'not_available' %}
+                        <span class="badge bg-secondary">Worker Not Available</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="mt-3 mt-md-0 w-100" style="display: flex; flex-direction: column; gap: 10px; max-width: 250px;">
+                {% if booking.status == 'accepted' %}
+                    <form method="POST" action="{% url 'confirm_booking' booking.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100" style="background-color: #28a745; border: none; padding: 8px 15px; font-weight: 600;">
+                            <i class="fa-solid fa-check"></i> Confirm & Book Now
+                        </button>
+                    </form>
+                {% endif %}
+                
+                <!-- Cancel Button for User to remove card -->
+                <form method="POST" action="{% url 'cancel_booking' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger w-100" style="padding: 8px 15px; font-weight: 600;">
+                        <i class="fa-solid fa-xmark"></i> Cancel Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fa-solid fa-info-circle"></i> No activity in New Works.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Work Status -->
+<div class="tab-pane fade" id="status">
+    <h3>Work Status Updates</h3>
+
+{% if bookings %}
+<div style="display: grid; gap: 20px;">
+    {% for booking in bookings %}
+            
+    <!-- WORKER SIDE -->
+    {% if request.session.user_type == 'worker' %}
+    {% if booking.status == 'confirmed' or booking.status == 'started' or booking.status == 'in_progress' or booking.status == 'almost_done' or booking.status == 'completed' %}
+    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #8f4444; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h5 style="color: #333;">Client: {{ booking.user.first_name }} ({{ booking.service_type }})</h5>
+        <p>Current Status: <strong>{{ booking.get_status_display }}</strong></p>
+
+        <form method="POST" action="{% url 'update_booking_status' booking.id %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <select class="form-select" name="status" required>
+                    <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="started" {% if booking.status == 'started' %}selected{% endif %}>Work Started</option>
+                    <option value="in_progress" {% if booking.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="almost_done" {% if booking.status == 'almost_done' %}selected{% endif %}>Almost Done</option>
+                    <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+                <button class="btn" type="submit" style="background-color: #8f4444; color: white;">Update Status</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- USER SIDE -->
+    {% elif request.session.user_type == 'user' %}
+    {% if booking.status == 'confirmed' or booking.status == 'started' or booking.status == 'in_progress' or booking.status == 'almost_done' or booking.status == 'completed' %}
+    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #007bff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h5 style="color: #333;">Work by: {{ booking.worker.first_name }} ({{ booking.service_type }})</h5>
+        <p>Live Status: 
+            {% if booking.status == 'confirmed' %}<span class="badge bg-secondary">Confirmed</span>
+            {% elif booking.status == 'started' %}<span class="badge bg-info">Work Started...</span>
+            {% elif booking.status == 'in_progress' %}<span class="badge bg-warning">In Progress</span>
+            {% elif booking.status == 'almost_done' %}<span class="badge bg-primary">Almost Done</span>
+            {% elif booking.status == 'completed' %}<span class="badge bg-success">Completed ✓</span>
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% endfor %}
+</div>
+{% else %}
+<p class="alert alert-light">No booked works to track.</p>
+{% endif %}
+</div>
+
+<!-- Feedback -->
+<div class="tab-pane fade" id="feedback">
+<div class="feedback-header d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fa-solid fa-comments"></i> Feedback & Reviews</h3>
+</div>
+
+{% if request.session.user_type == 'user' %}
+<!-- User Side: Give Feedback -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header" style="background-color: #f8f9fa;">
+        <h5 class="mb-0"><i class="fa-solid fa-pen-to-square"></i> Give Feedback for your Works</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{% url 'post_feedback' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="booking" class="form-label" style="font-weight: 600;">Select Booking</label>
+                    <select class="form-control" id="booking" name="booking" required>
+                        <option value="">Select a booking to review</option>
+                        {% for booking in pending_feedback_bookings %}
+                        <option value="{{ booking.id }}">Booking #{{ booking.id }} - {{ booking.service_type }} ({{ booking.worker.first_name }})</option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">Only completed works can be reviewed.</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" style="font-weight: 600;">Rating</label>
+                    <div class="star-rating" style="display: flex; gap: 8px; font-size: 1.8rem; color: #ddd;">
+                        <input type="hidden" id="rating" name="rating" value="0">
+                        {% for i in "12345" %}
+                        <span class="star" data-value="{{ forloop.counter }}" style="cursor: pointer; transition: all 0.2s;">
+                            <i class="fa-solid fa-star"></i>
+                        </span>
+                        {% endfor %}
+                        <span id="ratingText" style="font-size: 0.9rem; align-self: center; margin-left: 10px; color: #8f4444; font-weight: 600;">Rate it!</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="comment" class="form-label" style="font-weight: 600;">Your Experience</label>
+                <textarea class="form-control" id="comment" name="comment" rows="3" required placeholder="Tell others how the service was..."></textarea>
+            </div>
+             <div class="mb-3">
+                <label class="form-label" style="font-weight: 600;"><i class="fa-solid fa-image"></i> Upload Work Photos (Max 3)</label>
+                <div class="row g-2">
+                    <div class="col-md-4 text-center">
+                        <input type="file" class="form-control" name="upload_image" accept="image/*">
+                        <small class="text-muted">Photo 1</small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <input type="file" class="form-control" name="upload_image2" accept="image/*">
+                        <small class="text-muted">Photo 2</small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <input type="file" class="form-control" name="upload_image3" accept="image/*">
+                        <small class="text-muted">Photo 3</small>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="background-color: #8f4444; border: none; padding: 10px 25px;">
+                Submit Review
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Feedback History for User -->
+<h5 class="mb-3"><i class="fa-solid fa-history"></i> Your Recent Reviews</h5>
+{% else %}
+<!-- Worker Side: View Received Feedback -->
+<h5 class="mb-3"><i class="fa-solid fa-star"></i> Reviews from your Clients</h5>
+{% endif %}
+
+<!-- View Feedback List (Both see this, but content differs based on views.py logic) -->
+<div class="feedback-list">
+    {% if feedbacks %}
+    {% for f in feedbacks %}
+    <div class="card border-0 shadow-sm mb-3" style="border-left: 5px solid #8f4444 !important;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0" style="color: #333; font-weight: 700;">
+                    {% if request.session.user_type == 'worker' %}
+                        <i class="fa-solid fa-user"></i> From: {{ f.user.first_name }}
+                    {% else %}
+                        <i class="fa-solid fa-briefcase"></i> To: {{ f.worker.first_name }} ({{ f.booking.service_type }})
+                    {% endif %}
+                </h6>
+                <span class="text-warning">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= f.rating %}
+                            <i class="fa-solid fa-star"></i>
+                        {% else %}
+                            <i class="fa-regular fa-star" style="color: #ddd;"></i>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            <p class="mb-1" style="color: #555;">"{{ f.comment }}"</p>
+            <div class="mt-2 mb-2 d-flex gap-2 flex-wrap">
+                {% if f.upload_image %}
+                <a href="{{ f.upload_image.url }}" target="_blank">
+                    <img src="{{ f.upload_image.url }}" alt="Work Review" style="max-width: 120px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: zoom-in;">
+                </a>
+                {% endif %}
+                {% if f.upload_image2 %}
+                <a href="{{ f.upload_image2.url }}" target="_blank">
+                    <img src="{{ f.upload_image2.url }}" alt="Work Review" style="max-width: 120px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: zoom-in;">
+                </a>
+                {% endif %}
+                {% if f.upload_image3 %}
+                <a href="{{ f.upload_image3.url }}" target="_blank">
+                    <img src="{{ f.upload_image3.url }}" alt="Work Review" style="max-width: 120px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: zoom-in;">
+                </a>
+                {% endif %}
+            </div>
+            <small class="text-muted"><i class="fa-solid fa-calendar-day"></i> {{ f.created_at|date:"d M Y" }}</small>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-light border">
+        <i class="fa-solid fa-info-circle"></i> No feedback records found.
+    </div>
+    {% endif %}
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+
+document.getElementById("editBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    
+    // Enable all inputs
+    let inputs = document.querySelectorAll(".info-row input");
+    inputs.forEach(function (input) {
+        input.removeAttribute("disabled");
+    });
+
+    // Enable all dropdowns
+    let selects = document.querySelectorAll(".info-row select");
+    selects.forEach(function (select) {
+        select.removeAttribute("disabled"); 
+    });
+
+    document.getElementById("saveBtn").classList.remove("d-none");
+    this.classList.add("d-none");
+});
+
+function setCategory() {
+    let workerType = document.getElementById("worker_type").value;
+    let categoryField = document.getElementById("category");
+
+    const workerCategoryMap = {
+        // Home Maintenance
+        "Plumber": "Home Maintenance",
+        "Electrician": "Home Maintenance",
+        "Mechanic_2_4_wheeler": "Home Maintenance",
+        "AC_Technician": "Home Maintenance",
+        "Refrigerator_Technician": "Home Maintenance",
+        "Washing_Machine_Repair": "Home Maintenance",
+        "TV_Electronics_Repair": "Home Maintenance",
+        "Inverter_Technician": "Home Maintenance",
+        "RO_Water_Purifier_Technician": "Home Maintenance",
+        "Gas Stove Technician": "Home Maintenance",
+        "Chimney / Hob Technician": "Home Maintenance",
+        "Water Motor Technician": "Home Maintenance",
+        "UPS / Battery Technician": "Home Maintenance",
+
+        // Construction Services
+        "Mason": "Construction Services",
+        "Carpenter": "Construction Services",
+        "Painter": "Construction Services",
+        "Tile_Worker": "Construction Services",
+        "Marble_Granite_Worker": "Construction Services",
+        "Plaster_Worker": "Construction Services",
+        "Welder": "Construction Services",
+        "Fabricator": "Construction Services",
+        "Steel_Fixer": "Construction Services",
+        "Concrete Mixer Operator": "Construction Services",
+        "Demolition Worker": "Construction Services",
+        "False Ceiling Worker": "Construction Services",
+
+        // Cleaning Services
+        "House_Cleaner": "Cleaning Services",
+        "Office_Cleaner": "Cleaning Services",
+        "Sweeper": "Cleaning Services",
+        "Garbage_Collector": "Cleaning Services",
+        "Septic_Tank_Cleaner": "Cleaning Services",
+        "Drainage_Cleaner": "Cleaning Services",
+        "Bathroom Deep Cleaner": "Cleaning Services",
+
+        // Outdoor Services
+        "Gardener": "Outdoor Services",
+        "Borewell_Worker": "Outdoor Services",
+        "Water_Tank_Cleaner": "Outdoor Services",
+        "Pest_Control_Worker": "Outdoor Services",
+        "Tree_Cutter": "Outdoor Services",
+        "Drainage Maintenance Worker": "Outdoor Services",
+        "Roadside Cleaner": "Outdoor Services",
+        "Rainwater Harvesting Worker": "Outdoor Services",
+
+        // Installation Services
+        "CCTV_Installer": "Installation Services",
+        "Solar_Panel_Installer": "Installation Services",
+        "Network_Cable_Technician": "Installation Services",
+        "Door_Window_Fitter": "Installation Services",
+        "Modular_Kitchen_Installer": "Installation Services",
+        "Wallpaper_Installer": "Installation Services",
+        "LED_Light_Installer": "Installation Services",
+        "Smart_Lock_Installer": "Installation Services",
+        "Water_Heater_Installer": "Installation Services",
+
+        // Logistics & Labor
+        "Driver": "Logistics & Labor",
+        "Loader_Unloader": "Logistics & Labor",
+        "Daily_Wage_Laborer": "Logistics & Labor",
+        "Packers_Movers_Helper": "Logistics & Labor",
+
+        // Tailoring & Crafts
+        "Tailor": "Tailoring & Crafts",
+        "Embroidery Worker": "Tailoring & Crafts",
+        "Cobbler": "Tailoring & Crafts",
+        "Watch_Repair": "Tailoring & Crafts",
+        "Mobile_Repair_Technician": "Tailoring & Crafts",
+        "Lock_Repair_Key_Maker": "Tailoring & Crafts",
+
+        // Food & Event Support
+        "Cook": "Food & Event Support",
+        "Tea_Master": "Food & Event Support",
+        "Juice_Maker": "Food & Event Support",
+        "Fast_Food_Helper": "Food & Event Support",
+        "Dish_Washer": "Food & Event Support",
+        "Catering_Helper": "Food & Event Support",
+        "Server_Waiter": "Food & Event Support",
+        "Event_Setup_Worker": "Food & Event Support",
+        "Tent_House_Worker": "Food & Event Support",
+
+        // Personal Care
+        "Babysitter": "Personal Care",
+        "Elder_Care_Worker": "Personal Care",
+        "Patient_Care_Assistant": "Personal Care",
+        "Home_Nurse_Assistant": "Personal Care",
+        "Patient_Transport_Helper": "Personal Care",
+
+        // Rural Services
+        "Milkman": "Rural Services",
+        "Fisherman": "Rural Services",
+        "Farm_Laborer": "Rural Services",
+        "Tractor_Driver": "Rural Services",
+        "Poultry_Worker": "Rural Services",
+        "Well_Cleaner": "Rural Services",
+        "Irrigation_Helper": "Rural Services",
+        "Seed_Plantation_Worker": "Rural Services",
+        "Organic_Farming_Helper": "Rural Services"
+    };
+
+    if (workerCategoryMap[workerType]) {
+        categoryField.value = workerCategoryMap[workerType];
+    }
+}
+
+    // Star Rating for Feedback
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    const ratingText = document.getElementById('ratingText');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function () {
+            const value = this.getAttribute('data-value');
+            ratingInput.value = value;
+            ratingText.textContent = value + ' Star' + (value > 1 ? 's' : '');
+
+            // Update star colors
+            stars.forEach(s => {
+                if (s.getAttribute('data-value') <= value) {
+                    s.style.color = '#ffc107';
+                } else {
+                    s.style.color = '#ddd';
+                }
+            });
+        });
+
+        star.addEventListener('mouseover', function () {
+            const value = this.getAttribute('data-value');
+            stars.forEach(s => {
+                if (s.getAttribute('data-value') <= value) {
+                    s.style.color = '#ffc107';
+                } else {
+                    s.style.color = '#ddd';
+                }
+            });
+        });
+    });
+
+    document.querySelector('.star-rating').addEventListener('mouseleave', function () {
+        const currentRating = ratingInput.value;
+        stars.forEach(s => {
+            if (s.getAttribute('data-value') <= currentRating) {
+                s.style.color = '#ffc107';
+            } else {
+                s.style.color = '#ddd';
+            }
+        });
+    });
+</script>
+{% endblock %}

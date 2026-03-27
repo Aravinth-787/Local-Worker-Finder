@@ -1,0 +1,167 @@
+{% extends "home.html" %}
+{% load static %}
+{% block title %}About Us - Local Worker Finder{% endblock %}
+{% block content %}
+<style>
+    .about-container {
+        max-width: 800px;
+        margin: 100px auto 50px; /* Adjust margin to clear fixed navbar */
+        background: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        color: #8f4444;
+        border-bottom: 2px solid #8f4444;
+        padding-bottom: 10px;
+    }
+
+    h2 {
+        color: #8f4444;
+        margin-top: 30px;
+    }
+
+    p {
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    ul {
+        margin-bottom: 15px;
+    }
+
+    li {
+        margin-bottom: 8px;
+    }
+    /* ========LOGIN MODAL======================================== */
+    .modal-header{
+    background: linear-gradient(135deg, var(--primary-color) 0%, rgba(208, 208, 208, 0.8) 100%);
+    border-bottom: 3px solid var(--secondary-color);
+    padding: 20px;
+    }
+
+    .modal-title {
+    color: var(--secondary-color) !important;
+    font-weight: 700;
+    font-size: 1.3rem;
+    }
+
+    .modal-content {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(143, 68, 68, 0.15);
+    }
+
+    .modal-body {
+    padding: 30px;
+    }
+
+    .modal-body .form-control {
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    }
+
+    .modal-body .form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 8px rgba(143, 68, 68, 0.2);
+    }
+
+    .input-group-text {
+    background-color: white !important;
+    border: 2px solid var(--primary-color) !important;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    color: var(--secondary-color);
+    transition: all 0.3s ease;
+    }
+
+    .input-group .form-control {
+    border-radius: 8px 0 0 8px;
+    }
+
+    .input-group-text:hover {
+    background-color: var(--primary-color) !important;
+    color: var(--secondary-color);
+    }
+
+    .modal-body p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-top: 15px;
+    }
+
+    .modal-body p a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    }
+
+    .modal-body p a:hover {
+    color: #6f3535;
+    text-decoration: underline;
+    }
+
+    .modal-footer {
+    border-top: 3px solid var(--primary-color);
+    padding: 20px;
+    background-color: #f9f9f9;
+    }
+
+    .modal-footer .btn-outline-secondary {
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 10px 30px;
+    border-radius: 8px;
+    }
+
+    .modal-footer .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #6f3535 100%);
+    border-color: #6f3535;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(143, 68, 68, 0.3);
+    }
+
+    .btn-close {
+    filter: brightness(0.5);
+    }
+</style>
+
+
+<!-- About Us -->
+<div class="about-container">        
+    <h1>About Us</h1>
+    <p>Welcome to <strong>Local Worker Finder</strong>. We are a simple platform created to help local people find skilled workers easily.</p>
+
+    <h2>Our Goal</h2>
+    <p>Our main goal is to connect local workers like plumbers, electricians, and carpenters directly with customers. We want to make it easy for everyone to get help for their daily needs without any confusion.</p>
+
+    <h2>How to Use This Site</h2>
+    <ul>
+        <li><strong>Step 1:</strong> Select a worker category and your city.</li>
+        <li><strong>Step 2:</strong> View the list of available workers and their details.</li>
+        <li><strong>Step 3:</strong> Send a work request to the worker you like.</li>
+        <li><strong>Step 4:</strong> Once the worker accepts, you can confirm the booking.</li>
+        <li><strong>Step 5:</strong> After the work is done, you can give feedback and ratings.</li>
+    </ul>
+
+    <h2>Key Features</h2>
+    <ul>
+        <li>Easy search for workers by category.</li>
+        <li>Direct booking and status tracking.</li>
+        <li>Rating and review system for trust.</li>
+        <li>Admin panel for overall management.</li>
+    </ul>
+
+    <h2>Contact Information</h2>
+    <p>If you have any questions, you can contact us at support@localworkerfinder.com or call us at +91 98765 43210.</p>
+</div>
+{% endblock %}
