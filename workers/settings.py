@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'workers.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'workers_project',
-        'USER':'root',
-        'PASSWORD':'',
-        'HOST':'localhost',
+        'NAME': 'sql8822718',
+        'USER':'sql8822718',
+        'PASSWORD':'kLNIWY1CF3',
+        'HOST':'sql8.freesqldatabase.com',
         'PORT':'3306',
         'OPTIONS':{
             'init_command':"SET sql_mode='STRICT_TRANS_TABLES'"
