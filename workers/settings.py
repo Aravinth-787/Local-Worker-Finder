@@ -57,7 +57,7 @@ ROOT_URLCONF = 'workers.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'myapp' / 'Templates],
+        'DIRS': [BASE_DIR / 'myapp' / 'Templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
