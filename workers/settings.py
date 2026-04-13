@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,6 +52,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+
 
 ROOT_URLCONF = 'workers.urls'
 
@@ -77,15 +81,12 @@ WSGI_APPLICATION = 'workers.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sql8822718',
-        'USER':'sql8822718',
-        'PASSWORD':'kLNIWY1CF3',
-        'HOST':'sql8.freesqldatabase.com',
-        'PORT':'3306',
-        'OPTIONS':{
-            'init_command':"SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',
+        'USER':'neondb_owner',
+        'PASSWORD':'npg_B63LbRDgAjlK',
+        'HOST':'ep-crimson-morning-a17t6coe.ap-southeast-1.aws.neon.tech',
+        'PORT':'5432',
     }
 }
 
